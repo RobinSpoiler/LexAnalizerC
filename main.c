@@ -8,11 +8,6 @@ int main(int argc, char *argv[]) {
     FILE *fp;
     int token;
 
-    if (argc != 2) {
-        printf("Uso: %s archivo.c\n", argv[0]);
-        return 1;
-    }
-
     fp = fopen(argv[1], "r");
     if (fp == NULL) {
         perror("Error al abrir el archivo");
