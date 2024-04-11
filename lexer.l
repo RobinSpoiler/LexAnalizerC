@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 %}
 
 DIGIT       [0-9]
@@ -50,7 +51,6 @@ while       { printf("Palabra reservada: while\n"); }
 .           { printf("Token desconocido: %s\n", yytext); }
 %%
 
-int main() {
-    yylex();
-    return 0;
+int yywrap() {
+    return 1; // Indica a yylex() que hemos terminado de analizar
 }

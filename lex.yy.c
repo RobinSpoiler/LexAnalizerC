@@ -532,9 +532,10 @@ char *yytext;
 #line 1 "lexer.l"
 #line 2 "lexer.l"
 #include <stdio.h>
-#line 535 "lex.yy.c"
+#include <stdlib.h>
+#line 536 "lex.yy.c"
 /* Definir palabras reservadas de C */
-#line 537 "lex.yy.c"
+#line 538 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -751,9 +752,9 @@ YY_DECL
 		}
 
 	{
-#line 12 "lexer.l"
+#line 13 "lexer.l"
 
-#line 756 "lex.yy.c"
+#line 757 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -812,196 +813,196 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 13 "lexer.l"
+#line 14 "lexer.l"
 { printf("Palabra reservada: auto\n"); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 14 "lexer.l"
+#line 15 "lexer.l"
 { printf("Palabra reservada: break\n"); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 15 "lexer.l"
+#line 16 "lexer.l"
 { printf("Palabra reservada: case\n"); }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 16 "lexer.l"
+#line 17 "lexer.l"
 { printf("Palabra reservada: char\n"); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 17 "lexer.l"
+#line 18 "lexer.l"
 { printf("Palabra reservada: const\n"); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 18 "lexer.l"
+#line 19 "lexer.l"
 { printf("Palabra reservada: continue\n"); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 19 "lexer.l"
+#line 20 "lexer.l"
 { printf("Palabra reservada: default\n"); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 20 "lexer.l"
+#line 21 "lexer.l"
 { printf("Palabra reservada: do\n"); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 21 "lexer.l"
+#line 22 "lexer.l"
 { printf("Palabra reservada: double\n"); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 22 "lexer.l"
+#line 23 "lexer.l"
 { printf("Palabra reservada: else\n"); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 23 "lexer.l"
+#line 24 "lexer.l"
 { printf("Palabra reservada: enum\n"); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 24 "lexer.l"
+#line 25 "lexer.l"
 { printf("Palabra reservada: extern\n"); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 25 "lexer.l"
+#line 26 "lexer.l"
 { printf("Palabra reservada: float\n"); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 26 "lexer.l"
+#line 27 "lexer.l"
 { printf("Palabra reservada: for\n"); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 27 "lexer.l"
+#line 28 "lexer.l"
 { printf("Palabra reservada: goto\n"); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 28 "lexer.l"
+#line 29 "lexer.l"
 { printf("Palabra reservada: if\n"); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 29 "lexer.l"
+#line 30 "lexer.l"
 { printf("Palabra reservada: int\n"); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 30 "lexer.l"
+#line 31 "lexer.l"
 { printf("Palabra reservada: long\n"); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 31 "lexer.l"
+#line 32 "lexer.l"
 { printf("Palabra reservada: register\n"); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 32 "lexer.l"
+#line 33 "lexer.l"
 { printf("Palabra reservada: return\n"); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 33 "lexer.l"
+#line 34 "lexer.l"
 { printf("Palabra reservada: short\n"); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 34 "lexer.l"
+#line 35 "lexer.l"
 { printf("Palabra reservada: signed\n"); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 35 "lexer.l"
+#line 36 "lexer.l"
 { printf("Palabra reservada: sizeof\n"); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 36 "lexer.l"
+#line 37 "lexer.l"
 { printf("Palabra reservada: static\n"); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 37 "lexer.l"
+#line 38 "lexer.l"
 { printf("Palabra reservada: struct\n"); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 38 "lexer.l"
+#line 39 "lexer.l"
 { printf("Palabra reservada: switch\n"); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 39 "lexer.l"
+#line 40 "lexer.l"
 { printf("Palabra reservada: typedef\n"); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 40 "lexer.l"
+#line 41 "lexer.l"
 { printf("Palabra reservada: union\n"); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 41 "lexer.l"
+#line 42 "lexer.l"
 { printf("Palabra reservada: unsigned\n"); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 42 "lexer.l"
+#line 43 "lexer.l"
 { printf("Palabra reservada: void\n"); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 43 "lexer.l"
+#line 44 "lexer.l"
 { printf("Palabra reservada: volatile\n"); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 44 "lexer.l"
+#line 45 "lexer.l"
 { printf("Palabra reservada: while\n"); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 46 "lexer.l"
+#line 47 "lexer.l"
 { printf("Número: %s\n", yytext); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 48 "lexer.l"
 { printf("Identificador: %s\n", yytext); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 48 "lexer.l"
+#line 49 "lexer.l"
 { printf("Operador: %s\n", yytext); }
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 50 "lexer.l"
 ; // Ignorar espacios en blanco, tabulaciones y saltos de línea
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 50 "lexer.l"
+#line 51 "lexer.l"
 { printf("Token desconocido: %s\n", yytext); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 51 "lexer.l"
+#line 52 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1004 "lex.yy.c"
+#line 1005 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2006,11 +2007,10 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 51 "lexer.l"
+#line 52 "lexer.l"
 
 
-int main() {
-    yylex();
-    return 0;
+int yywrap() {
+    return 1; // Indica a yylex() que hemos terminado de analizar
 }
 
