@@ -16,6 +16,7 @@ break       { printf("Palabra reservada: break\n"); }
 case        { printf("Palabra reservada: case\n"); }
 char        { printf("Palabra reservada: char\n"); }
 const       { printf("Palabra reservada: const\n"); }
+continue    { printf("Palabra reservada: continue\n"); }
 default     { printf("Palabra reservada: default\n"); }
 do          { printf("Palabra reservada: do\n"); }
 double      { printf("Palabra reservada: double\n"); }
