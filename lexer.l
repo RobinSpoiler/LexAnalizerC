@@ -16,7 +16,6 @@ break       { printf("Palabra reservada: break\n"); }
 case        { printf("Palabra reservada: case\n"); }
 char        { printf("Palabra reservada: char\n"); }
 const       { printf("Palabra reservada: const\n"); }
-continue    { printf("Palabra reservada: continue\n"); }
 default     { printf("Palabra reservada: default\n"); }
 do          { printf("Palabra reservada: do\n"); }
 double      { printf("Palabra reservada: double\n"); }
@@ -43,6 +42,8 @@ unsigned    { printf("Palabra reservada: unsigned\n"); }
 void        { printf("Palabra reservada: void\n"); }
 volatile    { printf("Palabra reservada: volatile\n"); }
 while       { printf("Palabra reservada: while\n"); }
+printf      { printf("Palabra reservada: printf\n"); }
+scanf       { printf("Palabra reservada: scanf\n"); }
 
 {NUMBER}    { printf("Número: %s\n", yytext); }
 {ID}        { printf("Identificador: %s\n", yytext); }
