@@ -7,7 +7,10 @@ DIGIT       [0-9]
 LETTER      [a-zA-Z]
 ID          {LETTER}({LETTER}|{DIGIT})*
 NUMBER      {DIGIT}+
+STRING      \"(\\.|[^\"])*\"
 OPERATOR    [+*-/]
+
+%x PRINTF
 
 /* Definir palabras reservadas de C */
 %%
@@ -46,7 +49,33 @@ while       { printf("Palabra reservada: while\n"); }
 printf      { printf("Palabra reservada: printf\n"); }
 scanf       { printf("Palabra reservada: scanf\n"); }
 
-{NUMBER}    { printf("Número: %s\n", yytext); }
+{STRING}    { printf("String: %s\n", yytext); }
+
+{DIGIT}+"."{DIGIT}+ { printf("Flotante: %s\n", yytext); }
+
+"."{DIGIT}+ { printf("Flotante: %s\n", yytext); }
+
+"printf(\"" {
+    printf("Interpolación encontrada: ");
+    BEGIN(PRINTF); 
+}
+
+<PRINTF>{
+    "%d"       { printf("Entero: %s\n", yytext); }
+    "%f"       { printf("Flotante: %s\n", yytext); }
+    "%s"       { printf("Cadena: %s\n", yytext); }
+    "\\n\""    { printf("Fin de la cadena de formato\n"); BEGIN(INITIAL); }
+    .          { /* Ignorar otros caracteres dentro de la cadena de formato */ }
+}
+
+\;     { printf("Punto y coma encontrado\n"); }
+\{     { printf("Llave de apertura encontrada\n"); }
+\}     { printf("Llave de cierre encontrada\n"); }
+\(     { printf("Paréntesis de apertura encontrado\n"); }
+\)     { printf("Paréntesis de cierre encontrado\n"); }
+\=     { printf("Igual\n"); }
+
+{NUMBER}    { printf("Número entero: %s\n", yytext); }
 {ID}        { printf("Identificador: %s\n", yytext); }
 {OPERATOR}  { printf("Operador: %s\n", yytext); }
 [ \t\n]     ; // Ignorar espacios en blanco, tabulaciones y saltos de línea
