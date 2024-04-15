@@ -1,57 +1,59 @@
 import sys, re
 from pythonparser import source, lexer, diagnostic
+import difflib
 
+# -------Comparing files as plain text--------
+def getPlainText(fileName):
+    plainText = None
+    with open(fileName) as file:
+        plainText =  file.read()
+    return plainText
+
+def getTextSimilarityPercentage(textFile1, textFile2):
+    return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
+
+
+def compareFilesAsText(fileName1, fileName2):
+    textFile1 = getPlainText(fileName1)
+    textFile2 = getPlainText(fileName2)
+
+    similarity = getTextSimilarityPercentage(textFile1, textFile2)
+    print("Comparing texts: they are " + str(similarity) +"% similar")
+
+# -------Comparing files with tokens--------
+
+# 
 def getBuffer(fileName):
     buf = None
-    with open(fileName) as f:
-        buf = source.Buffer(f.read(), f.name)
+    with open(fileName) as file:
+        buf = source.Buffer(file.read(), file.name)
     return buf
 
+def getTokenSimilarityPercentage(tokensFile1, tokensFile2):
+    return difflib.SequenceMatcher(None, tokensFile1, tokensFile2).ratio() * 100
 
-def getSimilarityPercentage(tokensFile1, tokensFile2):
-    smallerSize = len(tokensFile1) if len(tokensFile1) < len(tokensFile2) else len(tokensFile2)
-    counter = 0
-    for index in range(0, smallerSize):
-        if tokensFile1[index] == tokensFile2[index]:
-            counter += 1
-    
-    similarity = (counter / smallerSize) * 100
-    return similarity
+def getTokens(buffer, engine):
+    tokensFile = []
+    for token in lexer.Lexer(buffer, (3,4), engine):
+        tokensFile.append(token.value)
+    return tokensFile
 
-
-def compareFiles(fileName1, fileName2):
+def compareFilesWithTokens(fileName1, fileName2):
     bufferFile1 = getBuffer(fileName1)
     bufferFile2 = getBuffer(fileName2)
 
     # Engine
     engine = diagnostic.Engine()
 
-    # Storing tokens
-    tokensFile1 = []
-    tokensFile2 = []
-
     # Getting tokens of file 1
-    print("Tokens file 1 \n")
-    for token in lexer.Lexer(bufferFile1, (3,4), engine):
-        print(token.value)
-        tokensFile1.append(token.value)
-
+    tokensFile1 = getTokens(bufferFile1, engine)
     # Getting tokens of file 2
-    print("\nTokens file 2 \n")
-    for token in lexer.Lexer(bufferFile2, (3,4), engine):
-        print(token.value)
-        tokensFile2.append(token.value)
+    tokensFile2 = getTokens(bufferFile2, engine)
     
     # Getting similarity between two files
-    similarity = getSimilarityPercentage(tokensFile1, tokensFile2)
-    print("They are " + str(similarity) +"% similar")
-
-    
+    similarity = getTokenSimilarityPercentage(tokensFile1, tokensFile2)
+    print("Comparing tokens: they are " + str(similarity) +"% similar")
 
 
-compareFiles("prueba1.py", "prueba2.py")
-    
-
-
-# Rewriter ?
-# rewriter = source.Rewriter(buf)
+compareFilesWithTokens("prueba1.py", "prueba2.py")
+compareFilesAsText("prueba1.py", "prueba2.py")
