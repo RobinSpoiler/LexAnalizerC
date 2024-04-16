@@ -70,5 +70,5 @@ def compareFilesWithTokens(fileName1, fileName2):
     print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
 
-compareFilesWithTokens("prueba3.py", "prueba4.py")
-compareFilesAsText("prueba3.py", "prueba4.py")
+compareFilesWithTokens("prueba1.py", "prueba2.py")
+compareFilesAsText("prueba1.py", "prueba2.py")
