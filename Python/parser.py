@@ -1,21 +1,74 @@
 import sys, re
 from pythonparser import source, lexer, diagnostic
+import difflib
 
-# File name that we're going to analyze
-fname = "prueba.py"
+# -------Comparing files as plain text--------
+def getPlainText(fileName):
+    plainText = None
+    with open(fileName) as file:
+        plainText =  file.read()
+    return plainText
 
-# Buffer that will store all the content from the file we're reading
-buf = None
-# Open the file and asign the contest to buffer
-with open(fname) as f:
-    buf = source.Buffer(f.read(), f.name)
+def getTextSimilarityPercentage(textFile1, textFile2):
+    return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
 
-# Engine ?
-engine = diagnostic.Engine()
 
-# Rewriter ?
-rewriter = source.Rewriter(buf)
+def compareFilesAsText(fileName1, fileName2):
+    textFile1 = getPlainText(fileName1)
+    textFile2 = getPlainText(fileName2)
 
-# Print all tokens found in buffer
-for token in lexer.Lexer(buf, (3,4), engine):
-    print(token)
+    similarity = getTextSimilarityPercentage(textFile1, textFile2)
+    print("Comparing character by character: they are " + str(similarity) +"% similar")
+
+# -------Comparing files with tokens--------
+
+# 
+def getBuffer(fileName):
+    buf = None
+    with open(fileName) as file:
+        buf = source.Buffer(file.read(), file.name)
+    return buf
+
+def getTokenSimilarityPercentage(tokensFile1, tokensFile2):
+    return difflib.SequenceMatcher(None, tokensFile1, tokensFile2).ratio() * 100
+
+def getTokensValue(buffer, engine):
+    tokensFile = []
+    for token in lexer.Lexer(buffer, (3,4), engine):
+        if token.value == None:
+            tokensFile.append(token.kind)
+        else:
+            tokensFile.append(token.value)
+    return tokensFile
+
+def getTokensKind(buffer, engine):
+    tokensKindFile = []
+    tokensValueFile = []
+    for token in lexer.Lexer(buffer, (3,4), engine):
+        tokensKindFile.append(token.kind)
+        if token.value == None:
+            tokensValueFile.append(token.kind)
+        else:
+            tokensValueFile.append(token.value)
+    return tokensKindFile, tokensValueFile
+
+def compareFilesWithTokens(fileName1, fileName2):
+    bufferFile1 = getBuffer(fileName1)
+    bufferFile2 = getBuffer(fileName2)
+
+    # Engine
+    engine = diagnostic.Engine()
+
+    # Getting tokens of file 1
+    tokensFile1Kind, tokensFile1Value = getTokensKind(bufferFile1, engine)
+    # Getting tokens of file 2
+    tokensFile2Kind, tokensFile2Value  = getTokensKind(bufferFile2, engine)
+    
+    # Getting similarity between two files
+    similarityKind = getTokenSimilarityPercentage(tokensFile1Kind, tokensFile1Value)
+    similarityValue = getTokenSimilarityPercentage(tokensFile2Kind, tokensFile2Value)
+    print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
+    print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
+
+compareFilesWithTokens("prueba1.py", "prueba2.py")
+compareFilesAsText("prueba1.py", "prueba2.py")
