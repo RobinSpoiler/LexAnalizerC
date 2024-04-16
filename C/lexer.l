@@ -85,3 +85,7 @@ scanf       { printf("Palabra reservada: scanf\n"); }
 int yywrap() {
     return 1; // Indica a yylex() que hemos terminado de analizar
 }
+int main() {
+    yylex();
+    return 0;
+}

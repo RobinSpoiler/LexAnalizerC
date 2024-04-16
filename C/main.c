@@ -19,8 +19,7 @@ int main(int argc, char *argv[]) {
 
     // Ejecuta el analizador léxico hasta que llegue al final del archivo
     while ((token = yylex()) != 0) {
-        // No es necesario imprimir tokens individuales aquí,
-        // ya que las impresiones están manejadas por las reglas en lexer.l
+        printf("%d\n", token);
     }
 
     fclose(fp);
