@@ -14,11 +14,11 @@ reserved = {
     'else': 'ELSE',
     'enum': 'ENUM',
     'extern': 'EXTERN',
-    'float': 'FLOAT',
+    'float': 'FLOATTYPE',
     'for': 'FOR',
     'goto': 'GOTO',
     'if': 'IF',
-    'int': 'INT',
+    'int': 'INTTYPE',
     'long': 'LONG',
     'register': 'REGISTER',
     'return': 'RETURN',
@@ -37,9 +37,8 @@ reserved = {
 }
 
 # Lista de tokens
-tokens = [
+tokens = list(reserved.values()) + [
     'ID',
-    'NUMBER',
     'STR',
     'INT', 
     'FLOAT',
@@ -53,7 +52,7 @@ tokens = [
     'RBRACE',
     'LBRACKET',
     'RBRACKET'
-] + list(reserved.values())
+] 
 
 states = (
    ('doubleq','exclusive'),
@@ -69,10 +68,19 @@ t_COMMA = r'\,'
 t_ASSIGN = r'\='
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_LBRACE = r'{'
-t_RBRACE = r'}'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
+
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value, 'ID')  # Busca el valor en el diccionario de palabras reservadas
+    return t
+
+def t_RWLIBRARY(t):
+    r'\#[include]+\s\<[^0-9]+\>' 
+    return t
 
 def t_STR(t):
     r'\".*\"'
@@ -85,21 +93,6 @@ def t_FLOAT(t):
 
 def t_INT(t):
     r'\d(_\d|\d)*' # A number followed by multiple numbers or multiple sets of underscores+numbers
-    t.value = int(t.value)
-    return t
-
-def t_RWLIBRARY(t):
-    r'\#[include]+\s\<\[^0-9]\>' # A number followed by multiple numbers or multiple sets of underscores+numbers
-    t.value = int(t.value)
-    return t
-
-def t_ID(t):
-    r'[a-zA-Z_][a-zA-Z0-9_]*'
-    t.type = reserved.get(t.value, 'ID')
-    return t
-
-def t_NUMBER(t):
-    r'\d+'
     t.value = int(t.value)
     return t
 
