@@ -23,4 +23,4 @@ regex_individuales = r'[\{\}\(\)\.\[\]\&\*\+\-\~\!\/\%\>\<\^\|\?\:\;\,\.\=\#]'
 
 regex_compuestos = r'-> | <= | >= | != | \*= | /= | %= | \+= | -= | <<= | >>= | &= | ^= | \|= | <: | :> | <% | %> | %: | %:%: | \.\.\.'
 
-PUNCTUATORS = r'(' + regex_compuestos + r'|' + getRegexDuplicados() +  r'|' + regex_individuales + r')' 
+PUNCTUATOR_REGEX = r'(' + regex_compuestos + r'|' + getRegexDuplicados() +  r'|' + regex_individuales + r')' 

@@ -50,6 +50,8 @@ def getKeywordRegex():
 	# Remove the trailing "|" symbol
 	return regex[:-1] 
 
+KEYWORD_REGEX = r'(' + getKeywordRegex() + r')'
+
 reserved = {
     'printf' : 'PRINTF',
     'auto': 'AUTO',

@@ -1,6 +1,8 @@
 import ply.lex as lex
-from keywords import getKeywordRegex
-from punctuators import PUNCTUATORS
+from keywords import KEYWORD_REGEX
+from punctuators import PUNCTUATOR_REGEX
+from integers import INTEGER_CONSTANT_REGEX
+
 
 # Lista de tokens
 tokens = [
@@ -11,7 +13,7 @@ tokens = [
     'FLOAT',
     'RWLIBRARY',
     # Punctuation
-    'PUNCTUATORS',
+    'PUNCTUATOR',
     # Operation
     'ASSIGN',
     # Comments
@@ -28,10 +30,9 @@ states = (
 t_ignore = ' \t\n'
 
 
-t_PUNCTUATORS = PUNCTUATORS
+t_PUNCTUATOR = PUNCTUATOR_REGEX
 
-
-@lex.TOKEN(getKeywordRegex())
+@lex.TOKEN(KEYWORD_REGEX)
 def t_KEYWORD(t):
     return t
 
@@ -52,9 +53,8 @@ def t_FLOAT(t):
     t.value = float(t.value)
     return t
 
+@lex.TOKEN(INTEGER_CONSTANT_REGEX)
 def t_INT(t):
-    r'\d(_\d|\d)*' # A number followed by multiple numbers or multiple sets of underscores+numbers
-    t.value = int(t.value)
     return t
 
 def t_COMMENT(t):
@@ -106,3 +106,5 @@ lexer.input(data)
 for token in lexer:
     print(token)
     
+def getLexer():
+    return lexer
