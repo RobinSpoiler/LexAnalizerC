@@ -48,7 +48,7 @@ def getKeywordRegex():
 	for keyword in KEYWORDS:
 		regex += keyword + "|"
 	# Remove the trailing "|" symbol
-	return regex[:-1]
+	return regex[:-1] 
 
 reserved = {
     'printf' : 'PRINTF',
@@ -58,17 +58,17 @@ reserved = {
     'char': 'CHAR',
     'const': 'CONST',
     'continue': 'CONTINUE',
-    'default': 'DEFAULT',
+    'default': 'DEFAULT', 
     'do': 'DO',
-    'double': 'DOUBLE',
+    'double': 'CONSTANT',
     'else': 'ELSE',
     'enum': 'ENUM',
     'extern': 'EXTERN',
-    'float': 'FLOATTYPE',
+    'float': 'FLOAT',
     'for': 'FOR',
     'goto': 'GOTO',
     'if': 'IF',
-    'int': 'INTTYPE',
+    'int': 'CONSTANT',
     'long': 'LONG',
     'register': 'REGISTER',
     'return': 'RETURN',

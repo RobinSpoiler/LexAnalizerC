@@ -1,5 +1,6 @@
 import ply.lex as lex
 from keywords import getKeywordRegex
+from punctuators import PUNCTUATORS
 
 # Lista de tokens
 tokens = [
@@ -10,14 +11,7 @@ tokens = [
     'FLOAT',
     'RWLIBRARY',
     # Punctuation
-    'SEMICOLON',
-    'COMMA',
-    'LPAREN',
-    'RPAREN',
-    'LBRACE',
-    'RBRACE',
-    'LBRACKET',
-    'RBRACKET',
+    'PUNCTUATORS',
     # Operation
     'ASSIGN',
     # Comments
@@ -35,20 +29,27 @@ t_ignore = ' \t\n'
 
 # Definiciones de tokens para palabras reservadas
 
-t_SEMICOLON = r'\;'
-t_COMMA = r'\,'
-t_ASSIGN = r'\='
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_LBRACE = r'\{'
-t_RBRACE = r'\}'
-t_LBRACKET = r'\['
-t_RBRACKET = r'\]'
+
+# # Regresa un regex, donde cada elemento se repite dos veces
+# # Por ejemplo: r' \+\+ | \-\- | \*\*
+# # ++ -- == && << >> 
+# def getRegexDuplicados():
+#     DUPLICADOS = ["+", "-", "*", "=", "<", ">", "&", "|", "#"]
+#     regex = r''
+#     for i in DUPLICADOS:     
+#         regex += "\\" + i + "\\" + i + "|"
+#     return regex[:-1] 
+
+# regex_individuales = r'[\{\}\(\)\.\[\]\&\*\+\-\~\!\/\%\>\<\^\|\?\:\;\,\.\=\#]'
+
+# regex_compuestos = r'-> | <= | >= | != | \*= | /= | %= | \+= | -= | <<= | >>= | &= | ^= | \|= | <: | :> | <% | %> | %: | %:%: | \.\.\.'
+
+t_PUNCTUATORS = PUNCTUATORS
+
 
 @lex.TOKEN(getKeywordRegex())
 def t_KEYWORD(t):
     return t
-
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
