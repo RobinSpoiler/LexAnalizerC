@@ -92,21 +92,21 @@ class TestIntegers(unittest.TestCase):
 #         self.lexer.token()
 #         self.assertRaises(lex.LexError, self.lexer.token)
 
-# class TestStrings(unittest.TestCase):
-#     def setUp(self):
-#         self.lexer = lexer.getLexer()
+class TestStrings(unittest.TestCase):
+    def setUp(self):
+        self.lexer = lexer.getLexer()
 
-#     def test_basic_strings(self):
-#         self.lexer.input("'Le petit prince'")
-#         token = self.lexer.token()
-#         self.assertEqual(token.type, 'STR')
-#         self.assertEqual(token.value, "'Le petit prince'")
+    def test_basic_strings(self):
+        self.lexer.input("'Le petit prince'")
+        token = self.lexer.token()
+        self.assertEqual(token.type, 'STR')
+        self.assertEqual(token.value, "'Le petit prince'")
 
-#     def test_basic_strings_2(self):
-#         self.lexer.input('"Hola \\\"%s\\\""')
-#         token = self.lexer.token()
-#         self.assertEqual(token.type, 'STR')
-#         self.assertEqual(token.value, '"Hola \\\"%s\\\""')
+    def test_basic_strings_2(self):
+        self.lexer.input('"Hola \\\"%s\\\""')
+        token = self.lexer.token()
+        self.assertEqual(token.type, 'STR')
+        self.assertEqual(token.value, '"Hola \\\"%s\\\""')
 
 if __name__ == '__main__':
     unittest.main()

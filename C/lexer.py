@@ -2,7 +2,7 @@ import ply.lex as lex
 from keywords import KEYWORD_REGEX
 from punctuators import PUNCTUATOR_REGEX
 from integers import INTEGER_CONSTANT_REGEX
-
+from strings import *
 
 # Lista de tokens
 tokens = [
@@ -23,7 +23,8 @@ tokens = [
 ] 
 
 states = (
-   ('doubleq','exclusive'),
+    ('singleString','exclusive'),
+    ('doubleString','exclusive'),
 )
 
 # Reglas para tokens
@@ -44,10 +45,6 @@ def t_RWLIBRARY(t):
     r'\#[include]+\s\<[^0-9]+\>' 
     return t
 
-def t_STR(t):
-    r'\".*\"'
-    return t
-
 def t_FLOAT(t):
     r'(?:\d*(?:\_\d+)?\.\d*([eE][^_][+-]?[\d_]+)?)|(?:\d+([eE][+-]?\d+))'
     t.value = float(t.value)
@@ -65,32 +62,55 @@ def t_MULTILINECOMMENT(t):
     r'\/\*.*\*\/'
     return t
 
-#Match first "
-def t_doubleq(t):
-    r'\"'
-    t.lexer.begin('doubleq')
+@lex.TOKEN(SINGLE_STRING_BEGIN_END_REGEX)
+def t_begin_single_string(t):
+    t.lexer.begin('singleString')
+    t.lexer.str = "'"
+
+@lex.TOKEN(DOUBLE_STRING_BEGIN_END_REGEX)
+def t_begin_double_string(t):
+    t.lexer.begin('doubleString')
+    t.lexer.str = '"'
+
+# ========= STRING LITERALS =========
+# == Single-quoted string literals ==
+
+@lex.TOKEN(SINGLE_STRING_ESCAPE_REGEX)
+def t_singleString_escape_STR(t):
+    t.lexer.str += t.value
+
+@lex.TOKEN(SINGLE_STRING_CONTENT_REGEX)
+def t_singleString_content_STR(t):
+    t.lexer.str += t.value
+
+@lex.TOKEN(SINGLE_STRING_BEGIN_END_REGEX)
+def t_singleString_STR(t):
+    t.value = t.lexer.str + t.value
+    t.lexer.begin('INITIAL')
     return t
 
-#Rules for doubleq state
-def t_doubleq_string(t):
-    r'([^\"])'
+# == Double-quoted string literals ==
+@lex.TOKEN(DOUBLE_STRING_ESCAPE_REGEX)
+def t_doubleString_escape_STR(t):
+    t.lexer.str += t.value
 
-def t_doubleq_closing(t):
-    r'\\\"'
+@lex.TOKEN(DOUBLE_STRING_CONTENT_REGEX)
+def t_doubleString_content_STR(t):
+    t.lexer.str += t.value
 
-def t_doubleq_final(t):
-    r'\''
-    t.type = 'STR'
-    t.lexer.begin("INITIAL")
+@lex.TOKEN(DOUBLE_STRING_BEGIN_END_REGEX)
+def t_doubleString_STR(t):
+    t.value = t.lexer.str + t.value
+    t.lexer.begin('INITIAL')
     return t
 
-def t_doubleq_error(t):
-    pass
-
-# Regla para detectar errores
+# ======== ERROR HANDLERS ==========
 def t_error(t):
     print("Caracter ilegal '%s'" % t.value[0])
     t.lexer.skip(1)
+
+def t_singleString_doubleString_error(t):
+    print("ERROR with t:", t)
 
 # Construir el lexer
 lexer = lex.lex()
