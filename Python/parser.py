@@ -65,10 +65,16 @@ def compareFilesWithTokens(fileName1, fileName2):
     tokensFile2Kind, tokensFile2Value  = getTokensKind(bufferFile2, engine)
     
     # Getting similarity between two files
-    similarityKind = getTokenSimilarityPercentage(tokensFile1Kind, tokensFile1Value)
-    similarityValue = getTokenSimilarityPercentage(tokensFile2Kind, tokensFile2Value)
+    similarityKind = getTokenSimilarityPercentage(tokensFile1Kind, tokensFile2Kind)
+    similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
     print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
 
-compareFilesWithTokens("prueba1.py", "prueba2.py")
-compareFilesAsText("prueba1.py", "prueba2.py")
+files = ["prueba1.py", "prueba2.py", "prueba3.py", "prueba4.py", "prueba5.py"]
+
+for file1 in files:
+    for file2 in files:
+        if file1 != file2:
+            print("\nComparing file " + file1 +" with " + file2)
+            compareFilesWithTokens(file1, file2)
+            compareFilesAsText(file1, file2)
