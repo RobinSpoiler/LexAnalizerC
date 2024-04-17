@@ -1,59 +1,29 @@
 import ply.lex as lex
-
-reserved = {
-    'printf' : 'PRINTF',
-    'auto': 'AUTO',
-    'break': 'BREAK',
-    'case': 'CASE',
-    'char': 'CHAR',
-    'const': 'CONST',
-    'continue': 'CONTINUE',
-    'default': 'DEFAULT',
-    'do': 'DO',
-    'double': 'DOUBLE',
-    'else': 'ELSE',
-    'enum': 'ENUM',
-    'extern': 'EXTERN',
-    'float': 'FLOATTYPE',
-    'for': 'FOR',
-    'goto': 'GOTO',
-    'if': 'IF',
-    'int': 'INTTYPE',
-    'long': 'LONG',
-    'register': 'REGISTER',
-    'return': 'RETURN',
-    'short': 'SHORT',
-    'signed': 'SIGNED',
-    'sizeof': 'SIZEOF',
-    'static': 'STATIC',
-    'struct': 'STRUCT',
-    'switch': 'SWITCH',
-    'typedef': 'TYPEDEF',
-    'union': 'UNION',
-    'unsigned': 'UNSIGNED',
-    'void': 'VOID',
-    'volatile': 'VOLATILE',
-    'while': 'WHILE'
-}
+from keywords import getKeywordRegex
 
 # Lista de tokens
-tokens = list(reserved.values()) + [
+tokens = [
     'ID',
+    # Types
     'STR',
     'INT', 
     'FLOAT',
     'RWLIBRARY',
+    # Punctuation
     'SEMICOLON',
     'COMMA',
-    'ASSIGN',
     'LPAREN',
     'RPAREN',
     'LBRACE',
     'RBRACE',
     'LBRACKET',
     'RBRACKET',
+    # Operation
+    'ASSIGN',
+    # Comments
     'COMMENT',
-    'MULTILINECOMMENT'
+    'MULTILINECOMMENT',
+    'KEYWORD',
 ] 
 
 states = (
@@ -75,9 +45,13 @@ t_RBRACE = r'\}'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
 
+@lex.TOKEN(getKeywordRegex())
+def t_KEYWORD(t):
+    return t
+
+
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value, 'ID')  # Busca el valor en el diccionario de palabras reservadas
     return t
 
 def t_RWLIBRARY(t):
