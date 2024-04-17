@@ -10,4 +10,6 @@ int main() {
     printf("La suma de %d y %d es %d\n", num1, num2, suma);
 
     return 0;
+    //este es un comentario
+    /*Este también*/
 }

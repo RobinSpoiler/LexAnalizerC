@@ -51,7 +51,9 @@ tokens = list(reserved.values()) + [
     'LBRACE',
     'RBRACE',
     'LBRACKET',
-    'RBRACKET'
+    'RBRACKET',
+    'COMMENT',
+    'MULTILINECOMMENT'
 ] 
 
 states = (
@@ -94,6 +96,14 @@ def t_FLOAT(t):
 def t_INT(t):
     r'\d(_\d|\d)*' # A number followed by multiple numbers or multiple sets of underscores+numbers
     t.value = int(t.value)
+    return t
+
+def t_COMMENT(t):
+    r'\/\/.*'
+    return t
+
+def t_MULTILINECOMMENT(t):
+    r'\/\*.*\*\/'
     return t
 
 #Match first "
