@@ -47,50 +47,30 @@ class TestIntegers(unittest.TestCase):
         self.assertEqual(token.value, '0x5Af3LLU')
         self.assertEqual(token.type, 'INT')
         
-# class TestFloats(unittest.TestCase):
-#     def setUp(self):
-#         self.lexer = lexer.getLexer()
+class TestFloats(unittest.TestCase):
+    def setUp(self):
+        self.lexer = lexer.getLexer()
 
-#     def test_basic_decimal_floats(self):
-#         self.lexer.input('0. 72.40 072.30 2.71828 .25')
-#         for value in [0.0, 72.4, 72.3, 2.71828, .25]:
-#             token = self.lexer.token()
-#             self.assertAlmostEqual(token.value, value)
-#             self.assertEqual(token.type, 'FLOAT')
+    def test_decimal_fractional(self):
+        self.lexer.input('1.52 5. .569')
+        for value in ['1.52', '5.', '.569']:
+            token = self.lexer.token()
+            self.assertEqual(token.type, 'FLOAT')
+            self.assertEqual(token.value, value)
 
-#     def test_basic_decimal_floats_sci_notation(self):
-#         self.lexer.input('1.e+0 6.67428e-11 1E6 .12345E+5')
-#         for value in [1.0, 6.67428e-11, 1e6, 0.12345E+5]:
-#             token = self.lexer.token()
-#             self.assertAlmostEqual(token.value, value)
-#             self.assertEqual(token.type, 'FLOAT')
-    
-#     def test_decimal_underscored_floats(self):
-#         self.lexer.input('1_5. 0.15e+0_2')
-#         for value in [15.0, 15.0]:
-#             token = self.lexer.token()
-#             self.assertAlmostEqual(token.value, value)
-#             self.assertEqual(token.type, 'FLOAT')
+    def test_hexadecimal_floating_constant(self):
+        self.lexer.input('0X.A52Dp+59f 0x4F204BP-13L')
+        for value in ['0X.A52Dp+59f', '0x4F204BP-13L']:
+            token = self.lexer.token()
+            self.assertEqual(token.type, 'FLOAT')
+            self.assertEqual(token.value, value)
 
-#     def test_wrong_floats_1(self):
-#         self.lexer.input('1_.5')
-#         self.lexer.token()  # consumes "1"
-#         self.assertRaises(lex.LexError, self.lexer.token)
-
-#     def test_wrong_floats_2(self):
-#         self.lexer.input('1._5')
-#         self.lexer.token()  # consumes "1."
-#         self.assertRaises(lex.LexError, self.lexer.token)
-
-#     def test_wrong_floats_3(self):
-#         self.lexer.input('1.5_e1')
-#         self.lexer.token()  # consumes "1.5"
-#         self.assertRaises(lex.LexError, self.lexer.token)
-
-#     def test_wrong_floats_4(self):
-#         self.lexer.input('1.5e_1')
-#         self.lexer.token()
-#         self.assertRaises(lex.LexError, self.lexer.token)
+    def test_decimal_floating_constant(self):
+        self.lexer.input('.4920e+582F 4810E-491l')
+        for value in ['.4920e+582F', '4810E-491l']:
+            token = self.lexer.token()
+            self.assertEqual(token.type, 'FLOAT')
+            self.assertEqual(token.value, value)
 
 class TestStrings(unittest.TestCase):
     def setUp(self):
