@@ -1,5 +1,4 @@
 KEYWORDS = [
-	'printf',
     'auto',
     'break',
     'case',
@@ -16,9 +15,11 @@ KEYWORDS = [
     'for',
     'goto',
     'if',
+	'inline',
     'int',
     'long',
     'register',
+	'restrict',
     'return',
     'short',
     'signed',
@@ -31,7 +32,10 @@ KEYWORDS = [
     'unsigned',
     'void',
     'volatile',
-    'while'
+    'while',
+	'_Bool',
+	'_Complex',
+	'_Imaginary',
 ]
 
 def getKeywordRegex():
