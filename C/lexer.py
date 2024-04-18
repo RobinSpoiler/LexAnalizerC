@@ -51,10 +51,6 @@ def t_FLOAT(t):
 def t_INT(t):
     return t
 
-@lex.TOKEN(PUNCTUATOR_REGEX)
-def t_PUNCTUATOR(t):
-    return t
-
 def t_COMMENT(t):
     r'\/\/.*'
     return t
@@ -62,6 +58,13 @@ def t_COMMENT(t):
 def t_MULTILINECOMMENT(t):
     r'\/\*.*\*\/'
     return t
+
+@lex.TOKEN(PUNCTUATOR_REGEX)
+def t_PUNCTUATOR(t):
+    return t
+
+
+
 
 @lex.TOKEN(SINGLE_STRING_BEGIN_END_REGEX)
 def t_begin_single_string(t):
