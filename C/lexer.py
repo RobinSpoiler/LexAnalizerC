@@ -3,24 +3,22 @@ from keywords import KEYWORD_REGEX
 from punctuators import PUNCTUATOR_REGEX
 from integers import INTEGER_CONSTANT_REGEX
 from floats import FLOATING_CONSTANT_REGEX
+from headerNames import HEADER_NAME_REGEX
 from strings import *
 
 # Lista de tokens
 tokens = [
     'ID',
+    'PUNCTUATOR',
+    'KEYWORD',
     # Types
     'STR',
     'INT', 
     'FLOAT',
-    'RWLIBRARY',
-    # Punctuation
-    'PUNCTUATOR',
-    # Operation
-    'ASSIGN',
+    'HEADERNAME',
     # Comments
     'COMMENT',
     'MULTILINECOMMENT',
-    'KEYWORD',
 ] 
 
 states = (
@@ -41,8 +39,8 @@ def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     return t
 
-def t_RWLIBRARY(t):
-    r'\#[include]+\s\<[^0-9]+\>' 
+@lex.TOKEN(HEADER_NAME_REGEX)
+def t_HEADERNAME(t): 
     return t
 
 @lex.TOKEN(FLOATING_CONSTANT_REGEX)
@@ -56,7 +54,6 @@ def t_INT(t):
 @lex.TOKEN(PUNCTUATOR_REGEX)
 def t_PUNCTUATOR(t):
     return t
-
 
 def t_COMMENT(t):
     r'\/\/.*'

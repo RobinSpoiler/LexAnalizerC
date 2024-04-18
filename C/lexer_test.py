@@ -21,8 +21,24 @@ class TestPunctuators(unittest.TestCase):
         self.lexer.input(': << -> + ;')
         for value in [":", "<<", "->", "+", ";"]:
             token = self.lexer.token()
-            self.assertAlmostEqual(token.value, value)
+            self.assertEqual(token.value, value)
             self.assertEqual(token.type, 'PUNCTUATOR')
+
+class TestHeaderNames(unittest.TestCase):
+    def setUp(self):
+        self.lexer = lexer.getLexer()
+    
+    def test_hchar_header_name(self):
+        self.lexer.input("#include <stdio.h>")
+        token = self.lexer.token()
+        self.assertEqual(token.value, "#include <stdio.h>")
+        self.assertEqual(token.type, 'HEADERNAME')
+
+    def test_qchar_header_name(self):
+        self.lexer.input('#include "lex.yy.c"')
+        token = self.lexer.token()
+        self.assertEqual(token.value, '#include "lex.yy.c"')
+        self.assertEqual(token.type, 'HEADERNAME')
 
 
 class TestIntegers(unittest.TestCase):
