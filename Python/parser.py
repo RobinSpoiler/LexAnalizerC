@@ -6,7 +6,6 @@ import io
 # -------Comparing files as plain text--------
 def getPlainText(file):
     plainText = None
-    # with file.stream as f:
     with io.BytesIO(file.read()) as f:  # Lee el contenido del archivo en un buffer en memoria
         plainText = f.read()
     return plainText
@@ -26,7 +25,6 @@ def compareFilesAsText(file1, file2):
 def getBuffer(file):
     buf = None
     with io.BytesIO(file.read()) as f:  # Lee el contenido del archivo en un buffer en memoria
-    # with file.stream as f:
         buf = source.Buffer(f.read(), file.filename)
     return buf
 
