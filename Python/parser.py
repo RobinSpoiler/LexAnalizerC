@@ -70,11 +70,13 @@ def compareFilesWithTokens(fileName1, fileName2):
     print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
 
-files = ["prueba1.py", "prueba2.py", "prueba3.py", "prueba4.py", "prueba5.py"]
 
-for file1 in files:
-    for file2 in files:
-        if file1 != file2:
-            print("\nComparing file " + file1 +" with " + file2)
-            compareFilesWithTokens(file1, file2)
-            compareFilesAsText(file1, file2)
+if __name__ == '__main__':
+    files = ["prueba1.py", "prueba2.py", "prueba3.py", "prueba4.py", "prueba5.py"]
+
+    for file1 in files:
+        for file2 in files:
+            if file1 != file2:
+                print("\nComparing file " + file1 +" with " + file2)
+                compareFilesWithTokens(file1, file2)
+                compareFilesAsText(file1, file2)
