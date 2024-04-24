@@ -2,40 +2,30 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 export const Comparator = () => {
-    const [file1Content, setFile1Content] = useState(null);
-    const [file2Content, setFile2Content] = useState(null);
+    const [file1, setFile1] = useState(null);
+    const [file2, setFile2] = useState(null);
 
-    const handleFile1Change = async (event) => {
+    const handleFile1Change = (event) => {
         const file = event.target.files[0];
-        const content = await readFileContent(file);
-        setFile1Content(content);
+        setFile1(file);
     };
 
-    const handleFile2Change = async (event) => {
+    const handleFile2Change = (event) => {
         const file = event.target.files[0];
-        const content = await readFileContent(file);
-        setFile2Content(content);
-    };
-
-    const readFileContent = async (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(reader.error);
-            reader.readAsText(file);
-        });
+        setFile2(file);
     };
 
     const compareFiles = async () => {
-        // Aquí puedes utilizar file1Content y file2Content para enviar el contenido de los archivos al servidor
-        console.log("Contenido del archivo 1:", file1Content);
-        console.log("Contenido del archivo 2:", file2Content);
+        if (!file1 || !file2) {
+            console.error("Debes seleccionar dos archivos para comparar.");
+            return;
+        }
 
         try {
-            // Crear un objeto FormData y agregar el contenido de los archivos
+            // Crear un objeto FormData y agregar los archivos
             const formData = new FormData();
-            formData.append('file1', file1Content);
-            formData.append('file2', file2Content);
+            formData.append('file1', file1);
+            formData.append('file2', file2);
 
             // Realizar la llamada al servidor utilizando Axios
             const response = await axios.post('http://127.0.0.1:5000/compare', formData, {

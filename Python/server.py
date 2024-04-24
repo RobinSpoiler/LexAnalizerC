@@ -1,26 +1,30 @@
+# server.py
+
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText
+from parser_1 import compareFilesWithTokens, compareFilesAsText
 
 app = Flask(__name__)
 CORS(app, methods=["GET", "POST"], allow_headers=["Content-Type"])
 
 @app.route('/compare', methods=['POST'])
 def compare_files():
-    files = request.files
-    print(files)
-    if len(files) != 2:
-        return jsonify({'error': 'Exactly two files must be provided'}), 400
-    
-    file1 = files[0]
-    file2 = files[1]
+    file1 = request.files['file1']
+    file2 = request.files['file2']
 
+    if not (file1 and file2):
+        return jsonify({'error': 'Debes proporcionar dos archivos'}), 400
+
+    # Realizar la comparación de archivos
+    text_similarity = compareFilesAsText(file1, file2)
+    token_similarity_kind, token_similarity_value = compareFilesWithTokens(file1, file2)
     
-    # Perform comparison
-    comparison_results = {}
-    comparison_results['text_similarity'] = compareFilesAsText(file1, file2)
-    comparison_results['token_similarity'] = compareFilesWithTokens(file1, file2)
-    
+    comparison_results = {
+        'text_similarity': text_similarity,
+        'token_similarity_kind': token_similarity_kind,
+        'token_similarity_value': token_similarity_value
+    }
+
     return jsonify(comparison_results)
 
 @app.route('/')
