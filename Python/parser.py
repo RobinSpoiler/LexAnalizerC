@@ -24,23 +24,45 @@ def compareFilesAsText(file1, file2):
 # -------Comparing files with tokens--------
 def getBuffer(file):
     buf = None
-    with io.BytesIO(file.read()) as f:  # Lee el contenido del archivo en un buffer en memoria
-        buf = source.Buffer(f.read(), file.filename)
+    # Check if the file exists and has a size greater than zero
+    if file and file.seekable() and file.tell() > 0:
+        # Move the pointer to the beginning of the file
+        file.seek(0)
+        with io.BytesIO(file.read()) as f:
+            # Print file content for debugging
+            file_content = f.read()
+            buf = source.Buffer(file_content, file.filename)
+    else:
+        print("Error: File is empty or does not exist.")
     return buf
 
 def getTokenSimilarityPercentage(tokensFile1, tokensFile2):
     return difflib.SequenceMatcher(None, tokensFile1, tokensFile2).ratio() * 100
 
 def getTokensKindAndValue(buffer, engine):
+    print("Starting getTokensKindAndValue")
     tokensKindFile = []
     tokensValueFile = []
-    for token in lexer.Lexer(buffer, (3,4), engine):
+    
+    # Print buffer content for debugging
+    print("Buffer content:")
+    print(buffer.source)
+    
+    lex = lexer.Lexer(buffer, (3,4), engine)
+    print("Lexer object created")
+    print("Lexer object:", lex)
+    for token in lex:
+        print("Inside loop")
+        print("Token:", token)
         tokensKindFile.append(token.kind)
         if token.value is None:
             tokensValueFile.append(token.kind)
         else:
             tokensValueFile.append(token.value)
+    print("Exiting getTokensKindAndValue")
     return tokensKindFile, tokensValueFile
+
+
 
 def compareFilesWithTokens(fileName1, fileName2):
     bufferFile1 = getBuffer(fileName1)
@@ -48,7 +70,7 @@ def compareFilesWithTokens(fileName1, fileName2):
 
     # Engine
     engine = diagnostic.Engine()
-
+    print("engine: ", engine )
     # Getting tokens of file 1
     tokensFile1Kind, tokensFile1Value = getTokensKindAndValue(bufferFile1, engine)
     # Getting tokens of file 2
