@@ -7,5 +7,3 @@
 - yarn add @mui/material
 - yarn add axios
 - yarn add @emotion/styled
-
-
