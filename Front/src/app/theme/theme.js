@@ -17,8 +17,9 @@ export const theme = createTheme({
             green:'#5E921C',
             white: '#fff',
             red: '#B82626',
-            gris: '#737373',
+            grey: '#737373',
             black: '#000',
+            yellow: '#FFBF00'
         }
     }
 })
