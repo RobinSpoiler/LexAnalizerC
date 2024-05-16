@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import { MatrixDisplay, OverviewCard } from '../Components';
 
-export const PlagiarismOverview = () => {
+export const Overview = () => {
     const data = {
         "comp1": {
             "id" : "Paola vs Marco",  
