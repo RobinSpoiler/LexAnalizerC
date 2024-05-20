@@ -43,6 +43,7 @@ def getTokensKindAndValue(buffer, engine):
     print("Starting getTokensKindAndValue")
     tokensKindFile = []
     tokensValueFile = []
+    tokensList = []
     
     # Print buffer content for debugging
     print("Buffer content:")
@@ -53,14 +54,17 @@ def getTokensKindAndValue(buffer, engine):
     print("Lexer object:", lex)
     for token in lex:
         print("Inside loop")
-        print("Token:", token)
+        # print("Token:", token)
+        # tokensList.append(token)
+        tokensList.append((token.kind, str(token.loc)[11:]))
         tokensKindFile.append(token.kind)
         if token.value is None:
             tokensValueFile.append(token.kind)
         else:
             tokensValueFile.append(token.value)
+    print("AAAA TOKEN: ", tokensList)
     print("Exiting getTokensKindAndValue")
-    return tokensKindFile, tokensValueFile
+    return tokensKindFile, tokensValueFile, tokensList
 
 
 
@@ -72,9 +76,9 @@ def compareFilesWithTokens(fileName1, fileName2):
     engine = diagnostic.Engine()
     print("engine: ", engine )
     # Getting tokens of file 1
-    tokensFile1Kind, tokensFile1Value = getTokensKindAndValue(bufferFile1, engine)
+    tokensFile1Kind, tokensFile1Value,tokensList1 = getTokensKindAndValue(bufferFile1, engine)
     # Getting tokens of file 2
-    tokensFile2Kind, tokensFile2Value  = getTokensKindAndValue(bufferFile2, engine)
+    tokensFile2Kind, tokensFile2Value, tokensList2  = getTokensKindAndValue(bufferFile2, engine)
     
     # Getting similarity between two files by kind
     similarityKind = getTokenSimilarityPercentage(tokensFile1Kind, tokensFile2Kind)
@@ -83,5 +87,7 @@ def compareFilesWithTokens(fileName1, fileName2):
     # Getting similarity between two files by value
     similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
+    tokensList1 = str(tokensList1)
+    tokensList2 = str(tokensList2)
 
-    return similarityKind, similarityValue
+    return similarityKind, similarityValue, tokensList1, tokensList2

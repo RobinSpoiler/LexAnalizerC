@@ -66,12 +66,15 @@ def compare_files():
 
     # Realizar la comparación de archivos
     text_similarity = compareFilesAsText(file1, file2)
-    token_similarity_kind, token_similarity_value = compareFilesWithTokens(file1, file2)
+    token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
 
     comparison_results = {
         'text_similarity': text_similarity,
         'token_similarity_kind': token_similarity_kind,
-        'token_similarity_value': token_similarity_value
+        'token_similarity_value': token_similarity_value,
+        'tokensList1': tokensList1,
+        'tokensList2': tokensList2
+        
     }
 
     return jsonify(comparison_results)
