@@ -66,7 +66,23 @@ def getTokensKindAndValue(buffer, engine):
     print("Exiting getTokensKindAndValue")
     return tokensKindFile, tokensValueFile, tokensList
 
+def cleanTokensList(tokensList):
+    cleanTokensList = []
+    for registroToken in tokensList:
+        # print(registroToken)
+        linea = registroToken[1][:2]
+        # print(registroToken[1].replace(linea, ''))
+        cleanTokensList.append((registroToken[0],registroToken[1].replace(linea, '')))
+        # print(cleanTokensList)
+    return cleanTokensList
 
+def variables(cleanTokens):
+    highVariables = []
+    for elemento in cleanTokens:
+        if(elemento[0] == 'ident'):
+            highVariables.append(elemento)
+    return highVariables
+    
 
 def compareFilesWithTokens(fileName1, fileName2):
     bufferFile1 = getBuffer(fileName1)
@@ -87,7 +103,7 @@ def compareFilesWithTokens(fileName1, fileName2):
     # Getting similarity between two files by value
     similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
-    tokensList1 = str(tokensList1)
-    tokensList2 = str(tokensList2)
+    tokensList1 = list(tokensList1)
+    tokensList2 = list(tokensList2)
 
     return similarityKind, similarityValue, tokensList1, tokensList2

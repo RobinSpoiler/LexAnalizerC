@@ -2,7 +2,7 @@
 
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText
+from parser import compareFilesWithTokens, compareFilesAsText,cleanTokensList, variables
 from tables import db, File
 
 app = Flask(__name__)
@@ -67,13 +67,17 @@ def compare_files():
     # Realizar la comparación de archivos
     text_similarity = compareFilesAsText(file1, file2)
     token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
+    cleanTokens = cleanTokensList(tokensList1)
+    highVariables = variables(cleanTokens)
 
     comparison_results = {
         'text_similarity': text_similarity,
         'token_similarity_kind': token_similarity_kind,
         'token_similarity_value': token_similarity_value,
         'tokensList1': tokensList1,
-        'tokensList2': tokensList2
+        'tokensList2': tokensList2,
+        'cleanTokensList': cleanTokens,
+        'variables': highVariables,
         
     }
 
