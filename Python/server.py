@@ -38,14 +38,22 @@ def add_file():
         db.session.add(new_file)
     db.session.commit()
 
+    print(content)
     return jsonify({'message': 'Archivos agregados correctamente'}), 201
 
 # Ruta para obtener todos los archivos de la base de datos
 @app.route('/getFiles', methods=['GET'])
 def get_files():
+    ##Prueba
     files = File.query.all()
-    file_data = [{'id': file.id, 'filename': file.filename, 'content': file.content} for file in files]
-    return jsonify(file_data)
+    file_data = {}
+    for file in files:
+        file_data[file.id] = {'id': file.id, 'filename': file.filename, 'content': file.content}
+    for key in file_data:
+        file_data[key]['content'] = file_data[key]['content'].decode('utf-8')
+    print(file_data)
+    return jsonify(file_data), 200
+
 
 # Ruta para llamar los alogitmos de comparacion
 @app.route('/compare', methods=['POST'])
