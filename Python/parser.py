@@ -53,7 +53,7 @@ def getTokensKindAndValue(buffer, engine):
     print("Lexer object created")
     print("Lexer object:", lex)
     for token in lex:
-        print("Inside loop")
+        # print("Inside loop")
         # print("Token:", token)
         # tokensList.append(token)
         tokensList.append((token.kind, str(token.loc)[11:]))
@@ -62,26 +62,44 @@ def getTokensKindAndValue(buffer, engine):
             tokensValueFile.append(token.kind)
         else:
             tokensValueFile.append(token.value)
-    print("AAAA TOKEN: ", tokensList)
+    # print("tokensList TOKEN: ", tokensList)
     print("Exiting getTokensKindAndValue")
     return tokensKindFile, tokensValueFile, tokensList
 
 def cleanTokensList(tokensList):
     cleanTokensList = []
     for registroToken in tokensList:
-        # print(registroToken)
-        linea = registroToken[1][:2]
-        # print(registroToken[1].replace(linea, ''))
-        cleanTokensList.append((registroToken[0],registroToken[1].replace(linea, '')))
+        # print("registroToken",registroToken)
+        dospuntos = registroToken[1].find(':')
+        linea = registroToken[1][:dospuntos]
+        # print("clean",registroToken[1].replace(linea+":", ''))
+        cleanTokensList.append((registroToken[0],registroToken[1].replace(linea+":", '')))
         # print(cleanTokensList)
     return cleanTokensList
 
 def variables(cleanTokens):
     highVariables = []
-    for elemento in cleanTokens:
+    for elemento in cleanTokens[0]:
         if(elemento[0] == 'ident'):
             highVariables.append(elemento)
     return highVariables
+
+def ifStatement(cleanTokens):
+    # print("IF cleanTokens",cleanTokens)
+    highIfelse = []
+    for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
+        # print("0",elemento[0])
+        if(elemento[0] == 'if' or elemento[0] == 'elif' or elemento[0] == 'else'):
+            highIfelse.append(elemento)
+    return highIfelse
+
+def loops(cleanTokens):
+    # print("Loop cleanTokens",cleanTokens)
+    highLoop = []
+    for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
+        if(elemento[0] == 'while' or elemento[0] == 'for'):
+            highLoop.append(elemento)
+    return highLoop
     
 
 def compareFilesWithTokens(fileName1, fileName2):

@@ -2,7 +2,7 @@
 
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText,cleanTokensList, variables
+from parser import compareFilesWithTokens, compareFilesAsText,cleanTokensList, variables, ifStatement, loops
 from tables import db, File
 
 app = Flask(__name__)
@@ -67,8 +67,14 @@ def compare_files():
     # Realizar la comparación de archivos
     text_similarity = compareFilesAsText(file1, file2)
     token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
-    cleanTokens = cleanTokensList(tokensList1)
-    highVariables = variables(cleanTokens)
+    cleanTokens1 = cleanTokensList(tokensList1),
+    cleanTokens2 = cleanTokensList(tokensList2),
+    highVariables1 = variables(cleanTokens1),
+    highVariables2 = variables(cleanTokens2),
+    hightIfelse1 = ifStatement(cleanTokens1),
+    hightIfelse2 = ifStatement(cleanTokens2)
+    highLoops1 = loops(cleanTokens1),
+    highLoops2 = loops(cleanTokens2)
 
     comparison_results = {
         'text_similarity': text_similarity,
@@ -76,14 +82,59 @@ def compare_files():
         'token_similarity_value': token_similarity_value,
         'tokensList1': tokensList1,
         'tokensList2': tokensList2,
-        'cleanTokensList': cleanTokens,
-        'variables': highVariables,
-        
+        'cleanTokensList1': cleanTokens1,
+        'cleanTokensList2': cleanTokens2,
+        'variables1' : highVariables1,
+        'variables2' : highVariables2,
+        'ifstatements1' : hightIfelse1,
+        'ifstatements2' :hightIfelse2,
+        'loops1': highLoops1,
+        'loops2': highLoops2
     }
+    ##regresa valores para highlight
+    
 
     return jsonify(comparison_results)
 
+
+# @app.route('/compare2', methods=['GET'])
+# def compare_files():
+#     file1 = request.files['file1']
+#     file2 = request.files['file2']
+#     #Ultimo de la
+
+#     if not (file1 and file2):
+#         return jsonify({'error': 'Debes proporcionar dos archivos'}), 400
+
+#     # Realizar la comparación de archivos
+#     text_similarity = compareFilesAsText(file1, file2)
+#     token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
+#     cleanTokens = cleanTokensList(tokensList1)
+#     highVariables = variables(cleanTokens)
+
+#     comparison_results = {
+#         'text_similarity': text_similarity,
+#         'token_similarity_kind': token_similarity_kind,
+#         'token_similarity_value': token_similarity_value,
+#         'tokensList1': tokensList1,
+#         'tokensList2': tokensList2,
+#         'cleanTokensList': cleanTokens,
+#         'variables': highVariables,
+        
+#     }
+    ##regresa valores para highlight
+    
+
+    return jsonify(comparison_results)
+
+
 # @app.route('/')
+# def index():
+#     response = make_response('Hello, World!')
+#     response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+#     return response
+
+# @app.route('/overviewMatrix')
 # def index():
 #     response = make_response('Hello, World!')
 #     response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
