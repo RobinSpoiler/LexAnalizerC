@@ -1,44 +1,50 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export const Highlighter = () => {
-
-    const pages = [
-        { name: 'Subir archivos', route: '/upload'},
-        { name: 'Descripción general', route: '/overview'},
-        { name: 'Resultados', route: '/highlighter'}
-    ]
-
     const data = {
         "fileA": {
-            "indices": [[0, 5], [8,10], [20,55]],
-            "condicionales": {
-                "indices": [[0, 6], [22, 27]]
-            },
-            "loops": 5
-        },
+            "content": [
+                { "lineNumber": 1, "indices": [[0, 15]] },
+                { "lineNumber": 2, "indices": [[6, 7]] },
+                { "lineNumber": 3, "indices": [[4, 5], [8, 9]] },
+                { "lineNumber": 4, "indices": [[4, 21]] },
+                { "lineNumber": 5, "indices": [[0,5]] }
+            ]
+        }
     };
 
-    const resaltarPalabras = (contenido, indices) => {
-        const palabras = contenido.split('');
-        let palabraActual = '';
+    const resaltarPalabras = (linea, indices) => {
+        const palabras = linea.split('');
         let resaltado = [];
-        let indiceActual = 0;
+        let palabraActual = '';
+        let dentroDeResaltado = false;
 
         for (let i = 0; i < palabras.length; i++) {
-            if (indices.some(([inicio, fin]) => indiceActual >= inicio && indiceActual < fin)) {
+            if (indices.some(([inicio, fin]) => i >= inicio && i < fin)) {
+                if (!dentroDeResaltado) {
+                    if (palabraActual) {
+                        resaltado.push(palabraActual);
+                        palabraActual = '';
+                    }
+                    dentroDeResaltado = true;
+                }
                 palabraActual += palabras[i];
             } else {
-                if (palabraActual) {
+                if (dentroDeResaltado) {
                     resaltado.push(<span style={{ backgroundColor: "yellow" }}>{palabraActual}</span>);
                     palabraActual = '';
+                    dentroDeResaltado = false;
                 }
-                resaltado.push(palabras[i]);
+                palabraActual += palabras[i];
             }
-            indiceActual++;
         }
 
         if (palabraActual) {
-            resaltado.push(<span style={{ backgroundColor: "yellow" }}>{palabraActual}</span>);
+            if (dentroDeResaltado) {
+                resaltado.push(<span style={{ backgroundColor: "yellow" }}>{palabraActual}</span>);
+            } else {
+                resaltado.push(palabraActual);
+            }
         }
 
         return resaltado;
@@ -48,7 +54,7 @@ export const Highlighter = () => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        if (!file) return; // User didn't select a file
+        if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
             const content = e.target.result;
@@ -66,7 +72,18 @@ export const Highlighter = () => {
                     <div key={archivo}>
                         <h3>{archivo}</h3>
                         <pre>
-                            {resaltarPalabras(fileContent, info.indices)}
+                            {fileContent.split('\n').map((line, index) => {
+                                const lineNumber = index + 1;
+                                const lineInfo = info.content.find(item => item.lineNumber === lineNumber);
+                                if (lineInfo) {
+                                    return (
+                                        <div key={index}>
+                                            {resaltarPalabras(line, lineInfo.indices)}
+                                        </div>
+                                    );
+                                }
+                                return <div key={index}>{line}</div>;
+                            })}
                         </pre>
                     </div>
                 ))}
