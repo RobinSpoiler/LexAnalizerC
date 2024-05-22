@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 
 export const Highlighter = () => {
+
+    const pages = [
+        { name: 'Subir archivos', route: '/upload'},
+        { name: 'Descripción general', route: '/overview'},
+        { name: 'Resultados', route: '/highlighter'}
+    ]
+
     const data = {
         "fileA": {
             "indices": [[0, 5], [8,10], [20,55]],

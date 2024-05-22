@@ -7,3 +7,4 @@
 - yarn add @mui/material
 - yarn add axios
 - yarn add @emotion/styled
+- yarn add @mui/x-data-grid

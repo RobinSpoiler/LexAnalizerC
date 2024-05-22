@@ -1,8 +1,16 @@
-import React from 'react';
-import { Grid, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Grid, Button, Typography, Box } from '@mui/material';
 import { FileUploadOutlined } from '@mui/icons-material';
+import { NavBar, ProgressBar } from '../Components';
+import { useNavigate } from 'react-router-dom';
 
 export const Uploader = () => {
+    const navigate = useNavigate();
+    const [uploading, setUploading] = useState(false);
+
+    const pages = [
+        { name: 'Subir archivos', route: '/upload' }
+    ];
 
     const handleFileUpload = async (event) => {
         const files = event.target.files;
@@ -22,33 +30,15 @@ export const Uploader = () => {
             }
 
             console.log('Archivos subidos exitosamente');
-            // console.log(JSON.stringify(formData));
+            setUploading(true);
         } catch (error) {
             console.error('Error:', error.message);
         }
     };
 
-    //Borrar depsues
-    const handleFileRetrieve = async (event) => {
-
-        try {
-            const response = await fetch('http://127.0.0.1:5000/getFiles', {
-                method: 'GET',
-                // mode: 'no-cors'
-            });
-
-            if (!response.ok) {
-                console.log("adfad", response) 
-                 throw new Error('Error al recibir archivos');
-            }
-
-            // console.log(response);
-            const respuesta = await response.json();
-            console.log(respuesta);
-        } catch (error) {
-            console.error('Error:', error.message);
-        }
-    };
+    const handleProgressComplete = () => {
+        navigate('/overview')
+    }
 
     return (
         <Grid
@@ -60,14 +50,28 @@ export const Uploader = () => {
             alignContent='center'
             sx={{ minHeight: '100vh', minWidth: '100vw' }}
         >
-            <Grid item>
+            <NavBar pages={pages} />
+
+            <Grid item xs={12} align='center'>
+                <Typography variant='h2'>
+                    Detector de plagio
+                </Typography>
+            </Grid>
+
+            <Grid item xs={12} align='center'>
+                <Typography variant='body'>
+                    Code Sync detecta el plagio de su código con mayor precisión.
+                </Typography>
+            </Grid>
+
+            <Grid item xs={12} align='center' sx={{mt:5}}>
                 <Button
                     variant="contained"
                     component="label"
-                    sx={{ fontSize: '24px', padding: '100px 100px', textTransform: 'none' }}
+                    sx={{ fontSize: '20px', padding: '100px 100px', textTransform: 'none' }}
                     startIcon={<FileUploadOutlined sx={{ fontSize: '30px' }} />}
-                    >
-                    Subir archivo(s)
+                >
+                    Subir archivos
                     <input
                         type="file"
                         hidden
@@ -75,16 +79,13 @@ export const Uploader = () => {
                         onChange={handleFileUpload}
                     />
                 </Button>
-                <Button
-                    variant="contained"
-                    component="label"
-                    sx={{ fontSize: '10px', padding: '10px 10px', textTransform: 'none' }}
-                    onClick={handleFileRetrieve}
-                >
-                    Retrieve archivo(s)
-
-                </Button>
             </Grid>
+
+            {uploading && (
+                <Grid item xs={12} align='center' sx={{ mt: 5 }}>
+                    <ProgressBar duration={5000} onComplete={handleProgressComplete} /> 
+                </Grid>
+            )}
         </Grid>
     );
 }

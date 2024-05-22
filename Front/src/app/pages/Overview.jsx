@@ -3,6 +3,13 @@ import { Grid } from '@mui/material';
 import { MatrixDisplay, OverviewCard } from '../Components';
 
 export const Overview = () => {
+
+    const pages = [
+        { name: 'Subir archivos', route: '/upload'},
+        { name: 'Descripción general', route: '/overview'},
+        { name: 'Resultados', route: '/highlighter'}
+    ]
+
     const data = {
         "comp1": {
             "id" : "Paola vs Marco",  
