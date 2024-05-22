@@ -39,7 +39,7 @@ def add_file():
     db.session.commit()
 
     print(content)
-    return jsonify({'message': 'Archivos agregados correctamente'}), 201
+    return jsonify({'message': 'Archivos agregados correctamente'}), 200
 
 # Ruta para obtener todos los archivos de la base de datos
 @app.route('/getFiles', methods=['GET'])
