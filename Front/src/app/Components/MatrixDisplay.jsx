@@ -20,27 +20,30 @@ export const MatrixDisplay = ({ matrix }) => {
                 return 'App.red';
             }
         }
-        return 'default';
+        return 'transparent';
     };
 
     return (
         <Grid container justifyContent="center" alignItems="center">
             {rows.map((row, rowIndex) => (
-                <Grid container item key={rowIndex} spacing={2} justifyContent="center">
-                    {row.map((item, itemIndex) => (
-                        <Grid item key={itemIndex}>
+                <Grid container item key={rowIndex} padding={1} spacing={1} justifyContent="center">
+                    {row.map((val, index) => (
+                        <Grid item key={index}>
                             <Button
                                 variant="contained"
                                 sx={{
+                                    boxShadow: 'none',
                                     minWidth: '100px',
                                     minHeight: '50px',
-                                    backgroundColor: getButtonColor(item),
+                                    backgroundColor: getButtonColor(val),
+                                    textTransform: 'capitalize',
                                     '&:hover': {
-                                        backgroundColor: getButtonColor(item)
+                                        backgroundColor: getButtonColor(val),
+                                        boxShadow: 'none'
                                     }
                                 }}
                             >
-                                <Typography variant="body1">{item}</Typography>
+                                <Typography variant="body1" sx={{color: typeof val === 'number' ? 'App.white' : 'primary.main'}}>{val}</Typography>
                             </Button>
                         </Grid>
                     ))}
