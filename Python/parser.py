@@ -13,27 +13,27 @@ def getPlainText(file):
 def getTextSimilarityPercentage(textFile1, textFile2):
     return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
 
-def compareFilesAsText(file1, file2):
-    textFile1 = getPlainText(file1)
-    textFile2 = getPlainText(file2)
+def compareFilesAsText(textFile1, textFile2):
+    # textFile1 = getPlainText(file1)
+    # textFile2 = getPlainText(file2)
 
     similarity = getTextSimilarityPercentage(textFile1, textFile2)
     print("Comparing character by character: they are " + str(similarity) +"% similar")
     return similarity
 
 # -------Comparing files with tokens--------
-def getBuffer(file):
+def getBuffer(filecontent, filename):
     buf = None
     # Check if the file exists and has a size greater than zero
-    if file and file.seekable() and file.tell() > 0:
+    # if file and file.seekable() and file.tell() > 0:
         # Move the pointer to the beginning of the file
-        file.seek(0)
-        with io.BytesIO(file.read()) as f:
+        # file.seek(0)
+        # with io.BytesIO(file.read()) as f:
             # Print file content for debugging
-            file_content = f.read()
-            buf = source.Buffer(file_content, file.filename)
-    else:
-        print("Error: File is empty or does not exist.")
+            # file_content = f.read()
+    buf = source.Buffer(filecontent, filename)
+    # else:
+    #     print("Error: File is empty or does not exist.")
     return buf
 
 def getTokenSimilarityPercentage(tokensFile1, tokensFile2):
@@ -102,9 +102,9 @@ def loops(cleanTokens):
     return highLoop
     
 
-def compareFilesWithTokens(fileName1, fileName2):
-    bufferFile1 = getBuffer(fileName1)
-    bufferFile2 = getBuffer(fileName2)
+def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
+    bufferFile1 = getBuffer(filecontent1, fileName1)
+    bufferFile2 = getBuffer(filecontent2, fileName2)
 
     # Engine
     engine = diagnostic.Engine()
