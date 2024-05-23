@@ -9,6 +9,7 @@ import axios from 'axios';
 export const Overview = () => {
     const [view, setView] = useState('list'); // Estado para controlar la vista
     const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
+    const [data, setData] = useState(''); // Estado para controlar la data de compare
     useEffect(() => {
         setAllFiles(handleGetFiles())
     }, [])
@@ -22,28 +23,28 @@ export const Overview = () => {
         { name: 'Descripción general', route: '/overview' },
     ];
 
-    const data = {
-        "comp1": {
-            "id": "Paola vs Marco",
-            "file_names": ["prueba1.py", "prueba2.py"],
-            "porcentaje": 78
-        },
-        "comp2": {
-            "id": "Adrian vs Sofia",
-            "file_names": ["prueba2.py", "prueba3.py"],
-            "porcentaje": 46
-        },
-        "comp3": {
-            "id": "Marco vs Paola",
-            "file_names": ["prueba3.py", "prueba4.py"],
-            "porcentaje": 24
-        },
-        "comp4": {
-            "id": "Sofia vs Adrian",
-            "file_names": ["prueba4.py", "prueba5.py"],
-            "porcentaje": 0
-        }
-    };
+    // const data = {
+    //     "comp1": {
+    //         "id": "Paola vs Marco",
+    //         "file_names": ["prueba1.py", "prueba2.py"],
+    //         "porcentaje": 78
+    //     },
+    //     "comp2": {
+    //         "id": "Adrian vs Sofia",
+    //         "file_names": ["prueba2.py", "prueba3.py"],
+    //         "porcentaje": 46
+    //     },
+    //     "comp3": {
+    //         "id": "Marco vs Paola",
+    //         "file_names": ["prueba3.py", "prueba4.py"],
+    //         "porcentaje": 24
+    //     },
+    //     "comp4": {
+    //         "id": "Sofia vs Adrian",
+    //         "file_names": ["prueba5.py", "prueba6.py"],
+    //         "porcentaje": 0
+    //     }
+    // };
 
     const matrix = {
         "size": 4,
@@ -74,7 +75,6 @@ export const Overview = () => {
         }
     };
 
-
     const handleCompare = async () => {
         try {
 
@@ -88,13 +88,12 @@ export const Overview = () => {
             });
 
             console.log(response.data);
+            setData(response.data)
             // Manejar los datos de respuesta
         } catch (error) {
             console.error('Error al comparar archivos:', error);
         }
     };
-
-
 
 
     const ListView = () => (
@@ -126,10 +125,7 @@ export const Overview = () => {
                 gap: 10, // Espacio entre los botones
             }}
                 onLoad={handleGetFiles}>
-                <Button onClick={handleGetFiles}>GetFiles</Button>
-                <Button onClick={handleCompare}>handleCompare</Button>
-
-                <Link
+               <Link
                     component={RouterLink}
                     underline="none"
                     sx={{
