@@ -2,10 +2,10 @@
 
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText,cleanTokensList
+from parser import compareFilesWithTokens, compareFilesAsText, cleanTokensList
 from tables import db, File
 from semanticDiff import getSemanticValues
-import io
+# import io
 
 def getPlainText(file):
     with io.BytesIO(file.read()) as f:  # Lee el contenido del archivo en un buffer en memoria
@@ -99,9 +99,6 @@ def compare_files():
     
 
     # Para obtener línea por línea lo que está ocurriendo
-    file1Text = getPlainText(file1).decode("utf-8").splitlines()
-    file2Text = getPlainText(file2).decode("utf-8").splitlines()
-
     # Realizar la comparación de archivos
     allFilesRequest = request.json
     compNum = 1
@@ -146,33 +143,101 @@ def compare_files():
     return data
 
 
-# @app.route('/compare2', methods=['GET'])
-# def compare_files():
-#     file1 = request.files['file1']
-#     file2 = request.files['file2']
-#     #Ultimo de la
 
-#     if not (file1 and file2):
-#         return jsonify({'error': 'Debes proporcionar dos archivos'}), 400
+    """
+    fileA: {
+        string: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        token: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        semántico: {
+            variables: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            ciclos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            operators: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            argumentos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+    fileB: {
+        string: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        token: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        semántico: {
+            variables: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            ciclos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            operators: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            argumentos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+    }
+    """
 
-#     # Realizar la comparación de archivos
-#     text_similarity = compareFilesAsText(file1, file2)
-#     token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
-#     cleanTokens = cleanTokensList(tokensList1)
-#     highVariables = variables(cleanTokens)
 
-#     comparison_results = {
-#         'text_similarity': text_similarity,
-#         'token_similarity_kind': token_similarity_kind,
-#         'token_similarity_value': token_similarity_value,
-#         'tokensList1': tokensList1,
-#         'tokensList2': tokensList2,
-#         'cleanTokensList': cleanTokens,
-#         'variables': highVariables,
-        
-#     }
-    ##regresa valores para highlight
-    return jsonify(comparison_results)
+@app.route('/highlight', methods=['POST'])
+def highlight():
+    
+    comparison_results = {
+        # 'tokensList1': tokensList1,
+        # 'tokensList2': tokensList2,
+        # 'cleanTokensList1': cleanTokens1,
+        # 'cleanTokensList2': cleanTokens2,
+        # 'fileA': {
+        #     'string': {},
+        #     'tokenizado': {},
+        #     'semantico': getSemanticValues(file1Text, cleanTokens1)
+        # },
+        # 'fileB': {
+        #     'string': {},
+        #     'tokenizado': {},
+        #     'semantico': getSemanticValues(file2Text, cleanTokens2)
+        # }
+    }
+    
+
+    allFilesRequest = request.json
+    print(len(allFilesRequest["body"]))
+    for alumno1 in allFilesRequest["body"]:
+        fileContent1 = allFilesRequest["body"][alumno1]["content"]
+        fileName1 = allFilesRequest["body"][alumno1]["filename"]
+        for alumno2 in allFilesRequest["body"]:
+            if(alumno1 != alumno2):
+                fileContent2 = allFilesRequest["body"][alumno2]["content"]
+                fileName2 = allFilesRequest["body"][alumno2]["filename"]
+                similarityKind, similarityValue, tokensList1, tokensList2 = compareFilesWithTokens(fileName1, fileName2,fileContent1, fileContent2)
+                cleanTokens1 = cleanTokensList(tokensList1)
+        comparison_results[fileName1] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}
+    print("comparison_results", comparison_results)
+
+    return comparison_results
+
+
+
     """
     fileA: {
         string: {

@@ -10,6 +10,7 @@ export const Overview = () => {
     const [view, setView] = useState('list'); // Estado para controlar la vista
     const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
     const [data, setData] = useState(''); // Estado para controlar la data de compare
+    
     useEffect(() => {
         setAllFiles(handleGetFiles())
     }, [])
@@ -66,7 +67,7 @@ export const Overview = () => {
             const res = await response.json();
             setAllFiles(res);
 
-            console.log("ADFSDF", allfiles)
+            console.log("handleGetFiles", allfiles)
 
 
             console.log('Archivos subidos exitosamente');

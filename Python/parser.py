@@ -14,9 +14,6 @@ def getTextSimilarityPercentage(textFile1, textFile2):
     return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
 
 def compareFilesAsText(textFile1, textFile2):
-    # textFile1 = getPlainText(file1)
-    # textFile2 = getPlainText(file2)
-
     similarity = getTextSimilarityPercentage(textFile1, textFile2)
     print("Comparing character by character: they are " + str(similarity) +"% similar")
     return similarity
@@ -63,29 +60,29 @@ def cleanTokensList(tokensList):
         cleanTokensList.append((registroToken[0],registroToken[1].replace(linea+":", '')))
     return cleanTokensList
 
-def variables(cleanTokens):
-    highVariables = []
-    for elemento in cleanTokens[0]:
-        if(elemento[0] == 'ident'):
-            highVariables.append(elemento)
-    return highVariables
+# def variables(cleanTokens):
+#     highVariables = []
+#     for elemento in cleanTokens[0]:
+#         if(elemento[0] == 'ident'):
+#             highVariables.append(elemento)
+#     return highVariables
 
-def ifStatement(cleanTokens):
-    # print("IF cleanTokens",cleanTokens)
-    highIfelse = []
-    for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
-        # print("0",elemento[0])
-        if(elemento[0] == 'if' or elemento[0] == 'elif' or elemento[0] == 'else'):
-            highIfelse.append(elemento)
-    return highIfelse
+# def ifStatement(cleanTokens):
+#     # print("IF cleanTokens",cleanTokens)
+#     highIfelse = []
+#     for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
+#         # print("0",elemento[0])
+#         if(elemento[0] == 'if' or elemento[0] == 'elif' or elemento[0] == 'else'):
+#             highIfelse.append(elemento)
+#     return highIfelse
 
-def loops(cleanTokens):
-    # print("Loop cleanTokens",cleanTokens)
-    highLoop = []
-    for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
-        if(elemento[0] == 'while' or elemento[0] == 'for'):
-            highLoop.append(elemento)
-    return highLoop
+# def loops(cleanTokens):
+#     # print("Loop cleanTokens",cleanTokens)
+#     highLoop = []
+#     for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
+#         if(elemento[0] == 'while' or elemento[0] == 'for'):
+#             highLoop.append(elemento)
+#     return highLoop
     
 
 def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
@@ -94,7 +91,7 @@ def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
 
     # Engine
     engine = diagnostic.Engine()
-    print("engine: ", engine )
+    # print("engine: ", engine )
     # Getting tokens of file 1
     tokensFile1Kind, tokensFile1Value,tokensList1 = getTokensKindAndValue(bufferFile1, engine)
     # Getting tokens of file 2

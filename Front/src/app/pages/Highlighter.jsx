@@ -2,8 +2,63 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { NavBar } from '../Components';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+
 
 export const Highlighter = () => {
+    const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
+    const [comparisonRes, setcomparisonRes] = useState(''); // Estado para controlar la data de compare
+
+    useEffect(() => {
+        setAllFiles(handleGetFiles())
+    }, [])
+
+    useEffect(() => {
+        handleHighlights()
+    }, [allfiles])
+
+    const handleGetFiles = async (event) => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/getFiles', {
+                method: 'GET',
+            });
+
+            // console.log(response)
+            if (!response.ok) {
+                throw new Error('Error al subir archivos');
+            }
+
+            const res = await response.json();
+            setAllFiles(res);
+
+            console.log("ADFSDF", allfiles)
+
+
+            console.log('Archivos subidos exitosamente');
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
+
+    const handleHighlights = async () => {
+        try {
+
+            // Realizar la llamada al servidor utilizando Axios
+            const response = await axios.post('http://127.0.0.1:5000/highlight', {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+
+                },
+                body: allfiles
+            });
+
+            console.log(response.data);
+            setcomparisonRes(response.data)
+            // Manejar los datos de respuesta
+        } catch (error) {
+            console.error('Error al comparar archivos:', error);
+        }
+    };
 
     const location = useLocation();
     const { file_names } = location.state || {};
@@ -13,7 +68,7 @@ export const Highlighter = () => {
 
     console.log(file_names)
 
-    const data = {
+    const comparisonResults = {
         "fileA": {
             "content": [
                 { "lineNumber": 1, "indices": [[0, 15]] },
