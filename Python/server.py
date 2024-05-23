@@ -2,8 +2,15 @@
 
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText,cleanTokensList, variables, ifStatement, loops
+from parser import compareFilesWithTokens, compareFilesAsText,cleanTokensList
 from tables import db, File
+from semanticDiff import getSemanticValues
+import io
+
+def getPlainText(file):
+    with io.BytesIO(file.read()) as f:  # Lee el contenido del archivo en un buffer en memoria
+        return f.read()
+
 import collections
 
 app = Flask(__name__)
@@ -56,7 +63,7 @@ def get_files():
         file_data[file.id] = {'id': file.id, 'filename': file.filename, 'content': file.content}
     for key in file_data:
         file_data[key]['content'] = file_data[key]['content'].decode('utf-8')
-    print(file_data)
+    # print(file_data)
     return jsonify(file_data), 200
 
 @app.route('/getFileByName', methods=['GET'])
@@ -90,6 +97,11 @@ def compare_files():
         #     "porcentaje": 78
     }
     
+
+    # Para obtener línea por línea lo que está ocurriendo
+    file1Text = getPlainText(file1).decode("utf-8").splitlines()
+    file2Text = getPlainText(file2).decode("utf-8").splitlines()
+
     # Realizar la comparación de archivos
     allFilesRequest = request.json
     compNum = 1
@@ -160,22 +172,60 @@ def compare_files():
         
 #     }
     ##regresa valores para highlight
-    
-
     return jsonify(comparison_results)
-
-
-# @app.route('/')
-# def index():
-#     response = make_response('Hello, World!')
-#     response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-#     return response
-
-# @app.route('/overviewMatrix')
-# def index():
-#     response = make_response('Hello, World!')
-#     response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-#     return response
+    """
+    fileA: {
+        string: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        token: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        semántico: {
+            variables: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            ciclos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            operators: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            argumentos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+    fileB: {
+        string: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        token: {
+            similitud: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+        semántico: {
+            variables: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            ciclos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            operators: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+            argumentos: [
+                { lineNumber: int (desde 1), indices: [[int, int] ... }
+            ]
+        }
+    }
+    """
 
 if __name__ == '__main__':
     app.run(debug=True)
