@@ -27,6 +27,10 @@ def add_file():
     if 'files' not in request.files:
         return jsonify({'error': 'No se han enviado archivos'}), 400
 
+    # Delete all existing files from the database before adding new ones
+    db.session.query(File).delete()
+    db.session.commit()
+    
     # Obtener los archivos enviados
     files = request.files.getlist('files')
 
@@ -58,43 +62,42 @@ def get_files():
 # Ruta para llamar los alogitmos de comparacion
 @app.route('/compare', methods=['POST'])
 def compare_files():
-    file1 = request.files['file1']
-    file2 = request.files['file2']
-
-    if not (file1 and file2):
-        return jsonify({'error': 'Debes proporcionar dos archivos'}), 400
-
-    # Realizar la comparación de archivos
-    text_similarity = compareFilesAsText(file1, file2)
-    token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
-    cleanTokens1 = cleanTokensList(tokensList1),
-    cleanTokens2 = cleanTokensList(tokensList2),
-    highVariables1 = variables(cleanTokens1),
-    highVariables2 = variables(cleanTokens2),
-    hightIfelse1 = ifStatement(cleanTokens1),
-    hightIfelse2 = ifStatement(cleanTokens2)
-    highLoops1 = loops(cleanTokens1),
-    highLoops2 = loops(cleanTokens2)
-
-    comparison_results = {
-        'text_similarity': text_similarity,
-        'token_similarity_kind': token_similarity_kind,
-        'token_similarity_value': token_similarity_value,
-        'tokensList1': tokensList1,
-        'tokensList2': tokensList2,
-        'cleanTokensList1': cleanTokens1,
-        'cleanTokensList2': cleanTokens2,
-        'variables1' : highVariables1,
-        'variables2' : highVariables2,
-        'ifstatements1' : hightIfelse1,
-        'ifstatements2' :hightIfelse2,
-        'loops1': highLoops1,
-        'loops2': highLoops2
-    }
-    ##regresa valores para highlight
     
+    allFilesRequest = request.json
+    for clave in allFilesRequest:
+    # Hacer algo con esa clave
+        print(clave)
+    # Realizar la comparación de archivos
+    # text_similarity = compareFilesAsText(file1, file2)
+    # token_similarity_kind, token_similarity_value,tokensList1, tokensList2 = compareFilesWithTokens(file1, file2)
+    # cleanTokens1 = cleanTokensList(tokensList1),
+    # cleanTokens2 = cleanTokensList(tokensList2),
+    # highVariables1 = variables(cleanTokens1),
+    # highVariables2 = variables(cleanTokens2),
+    # hightIfelse1 = ifStatement(cleanTokens1),
+    # hightIfelse2 = ifStatement(cleanTokens2)
+    # highLoops1 = loops(cleanTokens1),
+    # highLoops2 = loops(cleanTokens2)
 
-    return jsonify(comparison_results)
+    # comparison_results = {
+    #     'text_similarity': text_similarity,
+    #     'token_similarity_kind': token_similarity_kind,
+    #     'token_similarity_value': token_similarity_value,
+    #     'tokensList1': tokensList1,
+    #     'tokensList2': tokensList2,
+    #     'cleanTokensList1': cleanTokens1,
+    #     'cleanTokensList2': cleanTokens2,
+    #     'variables1' : highVariables1,
+    #     'variables2' : highVariables2,
+    #     'ifstatements1' : hightIfelse1,
+    #     'ifstatements2' :hightIfelse2,
+    #     'loops1': highLoops1,
+    #     'loops2': highLoops2,
+
+    
+    #     }
+    # return jsonify(comparison_results)
+    return "hi"
 
 
 # @app.route('/compare2', methods=['GET'])
