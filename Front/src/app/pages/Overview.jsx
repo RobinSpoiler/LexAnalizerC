@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { Grid, Box, Link } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Grid, Box, Link, Button } from '@mui/material';
 import { OverviewCard, MatrixDisplay, NavBar } from '../Components';
 import { Link as RouterLink } from 'react-router-dom';
+import { Co2Sharp } from '@mui/icons-material';
+import axios from 'axios';
+
 
 export const Overview = () => {
     const [view, setView] = useState('list'); // Estado para controlar la vista
+    const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
+    useEffect(() => {
+        setAllFiles(handleGetFiles())
+    }, [])
+
+    useEffect(() => {
+        handleCompare()
+    }, [allfiles])
 
     const pages = [
         { name: 'Subir archivos', route: '/upload' },
@@ -39,6 +50,53 @@ export const Overview = () => {
         "data": ["", "Paola", "Marco", "Adrian", "Sofia", "Paola", 100, 78, 0, 0, "Marco", 24, 100, 0, 0, "Adrian", 0, 0, 100, 46, "Sofia", 0, 0, 0, 100]
     };
 
+
+    const handleGetFiles = async (event) => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/getFiles', {
+                method: 'GET',
+            });
+
+            // console.log(response)
+            if (!response.ok) {
+                throw new Error('Error al subir archivos');
+            }
+
+            const res = await response.json();
+            setAllFiles(res);
+
+            console.log("ADFSDF", allfiles)
+
+
+            console.log('Archivos subidos exitosamente');
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
+
+
+    const handleCompare = async () => {
+        try {
+
+            // Realizar la llamada al servidor utilizando Axios
+            const response = await axios.post('http://127.0.0.1:5000/compare', {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+
+                },
+                body: allfiles
+            });
+
+            console.log(response.data);
+            // Manejar los datos de respuesta
+        } catch (error) {
+            console.error('Error al comparar archivos:', error);
+        }
+    };
+
+
+
+
     const ListView = () => (
         <>
             {Object.entries(data).map(([key, value]) => (
@@ -60,13 +118,17 @@ export const Overview = () => {
             <NavBar pages={pages} />
             <Box sx={{
                 position: 'fixed',
-                top: '20vh', 
+                top: '20vh',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 display: 'flex',
                 flexDirection: 'row', // Para alinear los botones horizontalmente
                 gap: 10, // Espacio entre los botones
-            }}>
+            }}
+                onLoad={handleGetFiles}>
+                <Button onClick={handleGetFiles}>GetFiles</Button>
+                <Button onClick={handleCompare}>handleCompare</Button>
+
                 <Link
                     component={RouterLink}
                     underline="none"

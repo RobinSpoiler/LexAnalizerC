@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 export const Uploader = () => {
     const navigate = useNavigate();
     const [uploading, setUploading] = useState(false);
+    const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
+
 
     const pages = [
         { name: 'Subir archivos', route: '/upload' }
@@ -36,8 +38,32 @@ export const Uploader = () => {
         }
     };
 
+
+    const handleGetFiles = async (event) => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/getFiles', {
+                method: 'GET',
+            });
+
+            // console.log(response)
+            if (!response.ok) {
+                throw new Error('Error al subir archivos');
+            }
+
+            const res = await response.json();
+            setAllFiles(res);
+
+            console.log("ADFSDF", allfiles)
+
+
+            console.log('Archivos subidos exitosamente');
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
+
     const handleProgressComplete = () => {
-        navigate('/overview')
+        navigate("/overview")
     }
 
     return (
