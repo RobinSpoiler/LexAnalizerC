@@ -2,11 +2,11 @@ import React from 'react';
 import { Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-export const OverviewCard = ({ title, percentage }) => {
+export const OverviewCard = ({ file_names, percentage, title }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate('/detailedinfo', { state: { title, percentage } });
+        navigate('/highlighter', { state: { file_names } });
     };
 
     return (

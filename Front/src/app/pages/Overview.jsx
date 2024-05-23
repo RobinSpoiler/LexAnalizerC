@@ -14,18 +14,22 @@ export const Overview = () => {
     const data = {
         "comp1": {
             "id": "Paola vs Marco",
+            "file_names": ["prueba1.py", "prueba2.py"],
             "porcentaje": 78
         },
         "comp2": {
             "id": "Adrian vs Sofia",
+            "file_names": ["prueba2.py", "prueba3.py"],
             "porcentaje": 46
         },
         "comp3": {
             "id": "Marco vs Paola",
+            "file_names": ["prueba3.py", "prueba4.py"],
             "porcentaje": 24
         },
         "comp4": {
             "id": "Sofia vs Adrian",
+            "file_names": ["prueba4.py", "prueba5.py"],
             "porcentaje": 0
         }
     };
@@ -39,7 +43,7 @@ export const Overview = () => {
         <>
             {Object.entries(data).map(([key, value]) => (
                 <Grid key={key} item xs={12} align='center' sx={{ margin: '5px' }}>
-                    <OverviewCard title={value.id} percentage={value.porcentaje} />
+                    <OverviewCard file_names={value.file_names} title={value.id} percentage={value.porcentaje} />
                 </Grid>
             ))}
         </>
