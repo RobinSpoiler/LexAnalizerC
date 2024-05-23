@@ -54,6 +54,25 @@ def get_files():
     print(file_data)
     return jsonify(file_data), 200
 
+@app.route('/getFileByName', methods=['GET'])
+def get_file_by_name():
+    file_name = request.args.get('name')
+
+    print("filename: ", file_name)
+    if not file_name:
+        return jsonify({"error": "No file name provided"}), 400
+
+    file = File.query.filter_by(filename=file_name).first()
+    if not file:
+        return jsonify({"error": "File not found"}), 404
+
+    file_data = {
+        'id': file.id,
+        'filename': file.filename,
+        'content': file.content.decode('utf-8')
+    }
+
+    return jsonify(file_data), 200
 
 # Ruta para llamar los alogitmos de comparacion
 @app.route('/compare', methods=['POST'])
