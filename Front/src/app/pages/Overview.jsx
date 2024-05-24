@@ -76,6 +76,25 @@ export const Overview = () => {
         }
     };
 
+    // Function to sort and set data
+    function sortAndSetData(r) {
+        if (typeof r === 'object' && !Array.isArray(r)) {
+            // Convert dictionary to an array of objects
+            let arrayOfObjects = Object.values(r);
+
+            // Sort the array by 'porcentaje' in descending order
+            arrayOfObjects.sort((a, b) => b.porcentaje - a.porcentaje);
+
+            // Optional: Convert the sorted array back to a dictionary
+            let sortedDict = {};
+            arrayOfObjects.forEach((item, index) => {
+                sortedDict[index + 1] = item; // Adjust keys as necessary
+            });
+
+            setData(sortedDict); // Use setData to update the data
+        }
+    }
+
     const handleCompare = async () => {
         try {
 
@@ -88,8 +107,7 @@ export const Overview = () => {
                 body: allfiles
             });
 
-            console.log(response.data);
-            setData(response.data)
+            sortAndSetData(response.data)
             // Manejar los datos de respuesta
         } catch (error) {
             console.error('Error al comparar archivos:', error);
@@ -102,7 +120,7 @@ export const Overview = () => {
             {Object.entries(data).map(([key, value]) => (
                 <Grid key={key} item xs={12} align='center' sx={{
                     margin: '5px',
-                    
+
                 }}>
                     <OverviewCard file_names={value.file_names} title={value.id} percentage={value.porcentaje} />
                 </Grid>
@@ -163,16 +181,16 @@ export const Overview = () => {
             <Grid container justifyContent="center" alignItems="center" height='65vh' sx={{
                 marginTop: 20,
                 overflow: 'auto',
-                    '&::-webkit-scrollbar': {
-                        width: '8px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        backgroundColor: 'App.grey',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        backgroundColor: "secondary.main",
-                        borderRadius: '10px',
-                    },
+                '&::-webkit-scrollbar': {
+                    width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                    backgroundColor: 'App.grey',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: "secondary.main",
+                    borderRadius: '10px',
+                },
             }}>
                 {view === 'list' ? <ListView /> : <MatrixView />}
             </Grid>
