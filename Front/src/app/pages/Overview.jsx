@@ -10,7 +10,7 @@ export const Overview = () => {
     const [view, setView] = useState('list'); // Estado para controlar la vista
     const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
     const [data, setData] = useState(''); // Estado para controlar la data de compare
-    
+
     useEffect(() => {
         setAllFiles(handleGetFiles())
     }, [])
@@ -100,7 +100,10 @@ export const Overview = () => {
     const ListView = () => (
         <>
             {Object.entries(data).map(([key, value]) => (
-                <Grid key={key} item xs={12} align='center' sx={{ margin: '5px' }}>
+                <Grid key={key} item xs={12} align='center' sx={{
+                    margin: '5px',
+                    
+                }}>
                     <OverviewCard file_names={value.file_names} title={value.id} percentage={value.porcentaje} />
                 </Grid>
             ))}
@@ -126,7 +129,7 @@ export const Overview = () => {
                 gap: 10, // Espacio entre los botones
             }}
                 onLoad={handleGetFiles}>
-               <Link
+                <Link
                     component={RouterLink}
                     underline="none"
                     sx={{
@@ -157,7 +160,20 @@ export const Overview = () => {
                     Matriz
                 </Link>
             </Box>
-            <Grid container justifyContent="center" alignItems="center" sx={{ marginTop: 8 }}>
+            <Grid container justifyContent="center" alignItems="center" height='65vh' sx={{
+                marginTop: 20,
+                overflow: 'auto',
+                    '&::-webkit-scrollbar': {
+                        width: '8px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        backgroundColor: 'App.grey',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: "secondary.main",
+                        borderRadius: '10px',
+                    },
+            }}>
                 {view === 'list' ? <ListView /> : <MatrixView />}
             </Grid>
         </Box>
