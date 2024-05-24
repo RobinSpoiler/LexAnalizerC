@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { NavBar } from '../Components';
 import { useLocation } from 'react-router-dom';
@@ -6,79 +6,13 @@ import axios from 'axios';
 
 
 export const Highlighter = () => {
-    const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
-    const [comparisonRes, setcomparisonRes] = useState(''); // Estado para controlar la data de compare
-
-    useEffect(() => {
-        setAllFiles(handleGetFiles())
-    }, [])
-
-    useEffect(() => {
-        handleHighlights()
-    }, [allfiles])
-
-    const handleGetFiles = async (event) => {
-        try {
-            const response = await fetch('http://127.0.0.1:5000/getFiles', {
-                method: 'GET',
-            });
-
-            // console.log(response)
-            if (!response.ok) {
-                throw new Error('Error al subir archivos');
-            }
-
-            const res = await response.json();
-            setAllFiles(res);
-
-            console.log("ADFSDF", allfiles)
-
-
-            console.log('Archivos subidos exitosamente');
-        } catch (error) {
-            console.error('Error:', error.message);
-        }
-    };
-
-    const handleHighlights = async () => {
-        try {
-
-            // Realizar la llamada al servidor utilizando Axios
-            const response = await axios.post('http://127.0.0.1:5000/highlight', {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-
-                },
-                body: allfiles
-            });
-
-            console.log(response.data);
-            setcomparisonRes(response.data)
-            // Manejar los datos de respuesta
-        } catch (error) {
-            console.error('Error al comparar archivos:', error);
-        }
-    };
+    const [comparisonRes, setcomparisonRes] = useState({}); // Estado para controlar la data de compare
 
     const location = useLocation();
     const { file_names } = location.state || {};
 
     const fileA = file_names[0];
     const fileB = file_names[1];
-
-    console.log(file_names)
-
-    const comparisonResults = {
-        "fileA": {
-            "content": [
-                { "lineNumber": 1, "indices": [[0, 15]] },
-                { "lineNumber": 2, "indices": [[6, 7]] },
-                { "lineNumber": 3, "indices": [[4, 5], [8, 9]] },
-                { "lineNumber": 4, "indices": [[4, 21]] },
-                { "lineNumber": 5, "indices": [[0, 5]] }
-            ]
-        }
-    };
 
     const pages = [
         { name: 'Subir archivos', route: '/upload' },
@@ -88,6 +22,8 @@ export const Highlighter = () => {
 
 
     const [fileData, setFileData] = useState({});
+    const [content, setContent] = useState({});
+
 
     const fetchFileData = async (fileKey) => {
         try {
@@ -95,6 +31,8 @@ export const Highlighter = () => {
             if (response.ok) {
                 const fileData = await response.json();
                 setFileData(prev => ({ ...prev, [fileKey]: fileData.content }));
+                setContent(prev => ({ ...prev, [fileKey]: fileData.content }));
+
             } else {
                 console.error('Error fetching file content:', response.statusText);
             }
@@ -108,62 +46,45 @@ export const Highlighter = () => {
         fetchFileData(fileB);
     }, []);
 
-    // const d = {
-    //     "prueba1.py": {
-    //         "string": {
-    //             "similitud": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ]
-    //         },
-    //         "token": {
-    //             "similitud": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ]
-    //         },
-    //         "semántico": {
-    //             "variables": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ],
-    //             "ciclos": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ],
-    //             "operators": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ],
-    //             "argumentos": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ]
-    //         }
-    //     },
-    //     "prueba2.py": {
-    //         "string": {
-    //             "similitud": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ]
-    //         },
-    //         "token": {
-    //             "similitud": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ]
-    //         },
-    //         "semántico": {
-    //             "variables": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ],
-    //             "ciclos": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ],
-    //             "operators": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ],
-    //             "argumentos": [
-    //                 { "lineNumber": 1, "indices": [[0,15]] }
-    //             ]
-    //         },
-    //     }
-    // }
+    const handleHighlights = async () => {
+        try {
+
+            // Realizar la llamada al servidor utilizando Axios
+            const response = await axios.post('http://127.0.0.1:5000/highlight', {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+
+                },
+                body: fileData
+            });
+
+            const data = response.data
+
+            setcomparisonRes(data)
+
+            // Manejar los datos de respuesta
+        } catch (error) {
+            console.error('Error al comparar archivos:', error);
+        }
+    };
+
+    // console.log(comparisonRes)
+
+    useEffect(() => {
+        if (Object.keys(fileData).length == 2) {
+            handleHighlights();
+        }
+    }, [fileData])
+
+
+
 
     const resaltarPalabras = (linea, indices) => {
+
+        console.log("Linea", linea)
+        console.log("indices", indices)
+
+
         const palabras = linea.split('');
         let resaltado = [];
         let palabraActual = '';
@@ -196,36 +117,42 @@ export const Highlighter = () => {
                 resaltado.push(palabraActual);
             }
         }
-
         return resaltado;
     };
 
-    const [fileContent, setFileContent] = useState('');
+    const handleSemanticClick = (fileKey) => {
+        const semanticData = comparisonRes[fileKey].semantico;
+        const indices = []
+        Object.entries(semanticData).forEach(([key, value]) => {
+            if(value.length > 0){
+                indices.push(value)
+            }
+        });
+        
+        const highlightedContent = resaltarPalabras(content[fileKey], indices);
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
-            setFileContent(content);
-        };
-        reader.readAsText(file);
+        console.log(indices)
+        setContent(prevData => ({
+            ...prevData,
+            [fileKey]: highlightedContent,
+          }));
     };
+
 
     return (
         <Grid container spacing={0} margin={0} justifyContent='center' alignContent='center' minHeight='100vh' minWidth='100vw'>
             <NavBar pages={pages} />
 
             <Grid container spacing={2} justifyContent='center' padding={2} marginTop='10vh'>
+
                 {Object.keys(fileData).map((fileKey, index) => (
                     <Grid item xs={12} md={6} key={fileKey}>
-                        <Paper elevation={3} style={{ 
-                            height: '70vh', 
-                            padding: '15px', 
+                        <Paper elevation={3} style={{
+                            height: '70vh',
+                            padding: '15px',
                             overflow: 'auto',
-                            }}
-                            
+                        }}
+
                             sx={{
                                 '&::-webkit-scrollbar': {
                                     width: '8px',
@@ -238,7 +165,7 @@ export const Highlighter = () => {
                                     borderRadius: '10px',
                                 },
                             }}
-                            >
+                        >
 
                             <Box display="flex" justifyContent="center">
                                 <Typography
@@ -257,8 +184,10 @@ export const Highlighter = () => {
                                 </Typography>
                             </Box>
                             <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                                {fileData[fileKey]}
+                                {content[fileKey]}
                             </pre>
+                            <Button variant="contained" onClick={() => handleSemanticClick(fileKey)}>Semantic Info</Button>
+
                         </Paper>
                     </Grid>
                 ))}

@@ -143,70 +143,10 @@ def compare_files():
     return data
 
 
-
-    """
-    fileA: {
-        string: {
-            similitud: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-        }
-        token: {
-            similitud: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-        }
-        semántico: {
-            variables: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-            ciclos: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-            operators: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-            argumentos: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-        }
-    fileB: {
-        string: {
-            similitud: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-        }
-        token: {
-            similitud: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-        }
-        semántico: {
-            variables: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-            ciclos: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-            operators: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-            argumentos: [
-                { lineNumber: int (desde 1), indices: [[int, int] ... }
-            ]
-        }
-    }
-    """
-
-
 @app.route('/highlight', methods=['POST'])
 def highlight():
-    
     comparison_results = {
-        # 'tokensList1': tokensList1,
-        # 'tokensList2': tokensList2,
-        # 'cleanTokensList1': cleanTokens1,
-        # 'cleanTokensList2': cleanTokens2,
+
         # 'fileA': {
         #     'string': {},
         #     'tokenizado': {},
@@ -218,23 +158,26 @@ def highlight():
         #     'semantico': getSemanticValues(file2Text, cleanTokens2)
         # }
     }
-    
 
     allFilesRequest = request.json
-    print(len(allFilesRequest["body"]))
-    for alumno1 in allFilesRequest["body"]:
-        fileContent1 = allFilesRequest["body"][alumno1]["content"]
-        fileName1 = allFilesRequest["body"][alumno1]["filename"]
-        for alumno2 in allFilesRequest["body"]:
-            if(alumno1 != alumno2):
-                fileContent2 = allFilesRequest["body"][alumno2]["content"]
-                fileName2 = allFilesRequest["body"][alumno2]["filename"]
-                similarityKind, similarityValue, tokensList1, tokensList2 = compareFilesWithTokens(fileName1, fileName2,fileContent1, fileContent2)
-                cleanTokens1 = cleanTokensList(tokensList1)
-        comparison_results[fileName1] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}
-    print("comparison_results", comparison_results)
 
-    return comparison_results
+    print(allFilesRequest["body"])
+    arrNames = []
+    for filename in allFilesRequest["body"]:
+        arrNames.append(filename)
+    
+    fileContent1 = allFilesRequest["body"][arrNames[0]]
+    fileContent2 = allFilesRequest["body"][arrNames[1]]
+
+    similarityKind, similarityValue, tokensList1, tokensList2 = compareFilesWithTokens(arrNames[0], arrNames[1],fileContent1, fileContent2)
+
+    cleanTokens1 = cleanTokensList(tokensList1)
+    cleanTokens2 = cleanTokensList(tokensList2)
+
+    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}
+    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2, cleanTokens2)}
+
+    return jsonify(comparison_results), 200
 
 
 
