@@ -47,10 +47,25 @@ export const Overview = () => {
     //     }
     // };
 
-    const matrix = {
-        "size": 4,
-        "data": ["", "Paola", "Marco", "Adrian", "Sofia", "Paola", 100, 78, 0, 0, "Marco", 24, 100, 0, 0, "Adrian", 0, 0, 100, 46, "Sofia", 0, 0, 0, 100]
-    };
+    let lendefila =  Object.keys(allfiles).length + 1
+    let lenMatriz =  lendefila * lendefila
+    let matrix = new Array(lenMatriz) 
+
+    matrix = Array.from({ length: lenMatriz }, () => 1)
+    matrix[0] = " "
+    for(const key in allfiles){
+        matrix[key] = allfiles[key]["filename"]
+        matrix[key * lendefila] = allfiles[key]["filename"]
+
+        matrix[parseInt(key) + parseInt((key * lendefila))] = " "
+    }
+
+
+    console.log(matrix)
+    // const matrix = {
+    //     "size": Object.keys(allfiles).length,
+    //     "data": ["", "Paola", "Marco", "Adrian", "Sofia", "Paola", 100, 78, 0, 0, "Marco", 24, 100, 0, 0, "Adrian", 0, 0, 100, 46, "Sofia", 0, 0, 0, 100]
+    // };
 
 
     const handleGetFiles = async (event) => {
@@ -95,6 +110,9 @@ export const Overview = () => {
             console.error('Error al comparar archivos:', error);
         }
     };
+
+
+
 
 
     const ListView = () => (
