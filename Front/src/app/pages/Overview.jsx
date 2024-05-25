@@ -24,48 +24,40 @@ export const Overview = () => {
         { name: 'Descripción general', route: '/overview' },
     ];
 
-    // const data = {
-    //     "comp1": {
-    //         "id": "Paola vs Marco",
-    //         "file_names": ["prueba1.py", "prueba2.py"],
-    //         "porcentaje": 78
-    //     },
-    //     "comp2": {
-    //         "id": "Adrian vs Sofia",
-    //         "file_names": ["prueba2.py", "prueba3.py"],
-    //         "porcentaje": 46
-    //     },
-    //     "comp3": {
-    //         "id": "Marco vs Paola",
-    //         "file_names": ["prueba3.py", "prueba4.py"],
-    //         "porcentaje": 24
-    //     },
-    //     "comp4": {
-    //         "id": "Sofia vs Adrian",
-    //         "file_names": ["prueba5.py", "prueba6.py"],
-    //         "porcentaje": 0
-    //     }
-    // };
 
     let lendefila =  Object.keys(allfiles).length + 1
     let lenMatriz =  lendefila * lendefila
-    let matrix = new Array(lenMatriz) 
+    let matriz = new Array(lenMatriz) 
 
-    matrix = Array.from({ length: lenMatriz }, () => 1)
-    matrix[0] = " "
+    matriz = Array.from({ length: lenMatriz }, () => 1)
+    matriz[0] = " "
     for(const key in allfiles){
-        matrix[key] = allfiles[key]["filename"]
-        matrix[key * lendefila] = allfiles[key]["filename"]
+        matriz[key] = allfiles[key]["filename"]
+        matriz[key * lendefila] = allfiles[key]["filename"]
 
-        matrix[parseInt(key) + parseInt((key * lendefila))] = " "
+        matriz[parseInt(key) + parseInt((key * lendefila))] = " "
     }
 
+    const porcentajes = Object.values(data).map(item => item.porcentaje);
 
-    console.log(matrix)
-    // const matrix = {
-    //     "size": Object.keys(allfiles).length,
-    //     "data": ["", "Paola", "Marco", "Adrian", "Sofia", "Paola", 100, 78, 0, 0, "Marco", 24, 100, 0, 0, "Adrian", 0, 0, 100, 46, "Sofia", 0, 0, 0, 100]
-    // };
+
+    console.log(matriz)
+    let cont = 0
+    console.log("dadfd",porcentajes)
+    for(let i = 0; i < matriz.length; i++){
+        console.log("ADFAfs", porcentajes[cont])
+        if(matriz[i] == 1){
+            console.log("asdflkjasdfk")
+            matriz[i] = porcentajes[cont]
+            cont++
+        }
+    }
+    const matrix = {
+        "size": Object.keys(allfiles).length,
+        "data": matriz
+    };
+
+
 
 
     const handleGetFiles = async (event) => {
