@@ -8,7 +8,8 @@ export const Highlighter = () => {
     const [comparisonRes, setComparisonRes] = useState({});
     const [fileData, setFileData] = useState({});
     const [indices, setIndices] = useState({});
-    const [showContent, setShowContent] = useState(false); // Controlar la visibilidad de ambos archivos
+    const [showContent, setShowContent] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     const location = useLocation();
     const { file_names } = location.state || {};
@@ -21,6 +22,15 @@ export const Highlighter = () => {
         { name: 'Descripción general', route: '/overview' },
         { name: 'Comparador', route: '/highlighter' },
     ];
+
+    const categoryColors = {
+        variables: '#B8860B',  // Dorado oscuro
+        ciclos: '#2E8B57',     // Verde mar
+        operadores: '#4682B4', // Azul acero
+        funciones: '#CD5C5C',  // Rojo indio
+        argumentos: '#B8860B'  // Dorado oscuro
+    };
+    
 
     const fetchFileData = async (fileKey) => {
         try {
@@ -67,12 +77,13 @@ export const Highlighter = () => {
         const updateIndices = (fileKey) => {
             if (comparisonRes && comparisonRes[fileKey]) {
                 const semanticData = comparisonRes[fileKey]["semantico"];
-                const newIndices = [];
+                const newIndices = {};
 
                 if (semanticData) {
-                    Object.values(semanticData).forEach(lineDataArray => {
-                        lineDataArray.forEach(lineData => {
-                            newIndices.push(lineData);
+                    Object.keys(semanticData).forEach(category => {
+                        newIndices[category] = [];
+                        semanticData[category].forEach(lineData => {
+                            newIndices[category].push(lineData);
                         });
                     });
                 }
@@ -84,14 +95,14 @@ export const Highlighter = () => {
         updateIndices(fileB);
     }, [comparisonRes, fileA, fileB]);
 
-    const resaltarPalabras = (linea, indices) => {
+    const resaltarPalabras = (linea, indices, color) => {
         const palabras = linea.split('');
         let resaltado = [];
         let palabraActual = '';
         let dentroDeResaltado = false;
 
         for (let i = 0; i < palabras.length; i++) {
-            if (indices.some(indexRange => i >= indexRange[0] && i < indexRange[1])) {
+            if (indices.some(indexRange => i + 1 >= indexRange[0] && i + 1 < indexRange[1])) {
                 if (!dentroDeResaltado) {
                     if (palabraActual) {
                         resaltado.push(palabraActual);
@@ -102,7 +113,7 @@ export const Highlighter = () => {
                 palabraActual += palabras[i];
             } else {
                 if (dentroDeResaltado) {
-                    resaltado.push(<span style={{ backgroundColor: "yellow" }}>{palabraActual}</span>);
+                    resaltado.push(<span style={{ backgroundColor: color }}>{palabraActual}</span>);
                     palabraActual = '';
                     dentroDeResaltado = false;
                 }
@@ -112,7 +123,7 @@ export const Highlighter = () => {
 
         if (palabraActual) {
             if (dentroDeResaltado) {
-                resaltado.push(<span style={{ backgroundColor: "yellow" }}>{palabraActual}</span>);
+                resaltado.push(<span style={{ backgroundColor: color }}>{palabraActual}</span>);
             } else {
                 resaltado.push(palabraActual);
             }
@@ -120,31 +131,31 @@ export const Highlighter = () => {
         return resaltado;
     };
 
-    const renderFileContent = (fileKey) => {
+    const renderFileContent = (fileKey, category) => {
         const content = fileData[fileKey];
-        const fileIndices = indices[fileKey] || [];
+        const fileIndices = indices[fileKey] ? indices[fileKey][category] || [] : [];
 
         return (
             <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                {content && Array.isArray(fileIndices) && fileIndices.length > 0 && (
-                    content.split('\n').map((line, lineIndex) => {
-                        const lineIndices = fileIndices
-                            .filter(item => item.lineNumber === lineIndex + 1)
-                            .flatMap(item => item.indices);
+                {content && content.split('\n').map((line, lineIndex) => {
+                    const lineIndices = fileIndices
+                        .filter(item => item.lineNumber === lineIndex + 1)
+                        .flatMap(item => item.indices);
 
-                        return (
-                            <div key={lineIndex}>
-                                {resaltarPalabras(line, lineIndices)}
-                            </div>
-                        );
-                    })
-                )}
+                    console.log("Linea: ", lineIndex + 1, "Contenido: ", line)
+                    return (
+                        <div key={lineIndex}>
+                            {resaltarPalabras(line, lineIndices, categoryColors[category])}
+                        </div>
+                    );
+                })}
             </pre>
         );
     };
 
-    const handleSemanticClick = () => {
-        setShowContent(prev => !prev);
+    const handleCategoryClick = (category) => {
+        setSelectedCategory(category);
+        setShowContent(true);
     };
 
     return (
@@ -152,11 +163,21 @@ export const Highlighter = () => {
             <NavBar pages={pages} />
 
             <Grid item xs={12} marginTop='15vh' align='center'>
-                <Button variant="contained" onClick={handleSemanticClick}>Semantic Info</Button>
+                <Box display="flex" justifyContent="center" gap={2}>
+                    {Object.keys(categoryColors).map((category) => (
+                        <Button
+                            key={category}
+                            variant="contained"
+                            onClick={() => handleCategoryClick(category)}
+                            style={{ backgroundColor: categoryColors[category] }}
+                        >
+                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                        </Button>
+                    ))}
+                </Box>
             </Grid>
 
             <Grid container spacing={2} justifyContent='center' padding={2} >
-
                 {[fileA, fileB].map((fileKey) => (
                     <Grid item xs={12} md={6} key={fileKey}>
                         <Paper elevation={3} style={{
@@ -193,7 +214,7 @@ export const Highlighter = () => {
                                     {fileKey}
                                 </Typography>
                             </Box>
-                            {showContent && renderFileContent(fileKey)}
+                            {showContent && selectedCategory && renderFileContent(fileKey, selectedCategory)}
                         </Paper>
                     </Grid>
                 ))}

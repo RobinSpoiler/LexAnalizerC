@@ -50,7 +50,7 @@ def add_file():
         db.session.add(new_file)
     db.session.commit()
 
-    print(content)
+    # print(content)
     return jsonify({'message': 'Archivos agregados correctamente'}), 200
 
 # Ruta para obtener todos los archivos de la base de datos
@@ -70,7 +70,7 @@ def get_files():
 def get_file_by_name():
     file_name = request.args.get('name')
 
-    print("filename: ", file_name)
+    # print("filename: ", file_name)
     if not file_name:
         return jsonify({"error": "No file name provided"}), 400
 
@@ -102,7 +102,7 @@ def compare_files():
     # Realizar la comparación de archivos
     allFilesRequest = request.json
     compNum = 1
-    print(len(allFilesRequest["body"]))
+    # print(len(allFilesRequest["body"]))
     for alumno1 in allFilesRequest["body"]:
         fileContent1 = allFilesRequest["body"][alumno1]["content"]
         fileName1 = allFilesRequest["body"][alumno1]["filename"]
@@ -114,12 +114,12 @@ def compare_files():
                 similarityKind, similarityValue,tokensList1, tokensList2 = compareFilesWithTokens(fileName1, fileName2,fileContent1, fileContent2)
                 porcentaje = (similarityKind + similarityValue + text_similarity) // 3
 
-                print('\n')
-                print(fileContent1, fileName1, fileContent2,fileName2)
+                # print('\n')
+                # print(fileContent1, fileName1, fileContent2,fileName2)
                 data[compNum] = {"id": '%s vs %s' % (fileName1, fileName2), "file_names":[fileName1,fileName2], "porcentaje": porcentaje}
                 compNum += 1
     # data = sorted(data.items(), key=lambda x: x, reverse=True) 
-    print(data)
+    # print(data)
     
     
     # comparison_results = {
@@ -161,7 +161,7 @@ def highlight():
 
     allFilesRequest = request.json
 
-    print(allFilesRequest["body"])
+    # print(allFilesRequest["body"])
     arrNames = []
     for filename in allFilesRequest["body"]:
         arrNames.append(filename)
@@ -177,6 +177,7 @@ def highlight():
     comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}
     comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2, cleanTokens2)}
 
+    print(comparison_results)
     return jsonify(comparison_results), 200
 
 

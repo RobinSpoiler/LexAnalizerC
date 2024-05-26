@@ -15,7 +15,7 @@ def getTextSimilarityPercentage(textFile1, textFile2):
 
 def compareFilesAsText(textFile1, textFile2):
     similarity = getTextSimilarityPercentage(textFile1, textFile2)
-    print("Comparing character by character: they are " + str(similarity) +"% similar")
+    # print("Comparing character by character: they are " + str(similarity) +"% similar")
     return similarity
 
 # -------Comparing files with tokens--------
@@ -58,7 +58,7 @@ def cleanTokensList(tokensList):
         dospuntos = registroToken[1].find(':')
         linea = registroToken[1][:dospuntos]
         cleanTokensList.append((registroToken[0],registroToken[1].replace(linea+":", '')))
-    print("cleantokenlist",cleanTokensList)
+    # print("cleantokenlist",cleanTokensList)
     return cleanTokensList
 
 # def variables(cleanTokens):
@@ -100,11 +100,11 @@ def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
     
     # Getting similarity between two files by kind
     similarityKind = getTokenSimilarityPercentage(tokensFile1Kind, tokensFile2Kind)
-    print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
+    # print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
 
     # Getting similarity between two files by value
     similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
-    print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
+    # print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
     tokensList1 = list(tokensList1)
     tokensList2 = list(tokensList2)
 
