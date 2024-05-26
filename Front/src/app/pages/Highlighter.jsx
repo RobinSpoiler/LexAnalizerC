@@ -113,7 +113,7 @@ export const Highlighter = () => {
                 palabraActual += palabras[i];
             } else {
                 if (dentroDeResaltado) {
-                    resaltado.push(<span style={{ backgroundColor: color }}>{palabraActual}</span>);
+                    resaltado.push(<span style={{ backgroundColor: color, color: '#fff' }}>{palabraActual}</span>);
                     palabraActual = '';
                     dentroDeResaltado = false;
                 }
@@ -123,7 +123,7 @@ export const Highlighter = () => {
 
         if (palabraActual) {
             if (dentroDeResaltado) {
-                resaltado.push(<span style={{ backgroundColor: color }}>{palabraActual}</span>);
+                resaltado.push(<span style={{ backgroundColor: color, color: '#fff' }}>{palabraActual}</span>);
             } else {
                 resaltado.push(palabraActual);
             }
