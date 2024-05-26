@@ -24,11 +24,11 @@ export const Highlighter = () => {
     ];
 
     const categoryColors = {
-        variables: '#B8860B',  // Dorado oscuro
-        ciclos: '#2E8B57',     // Verde mar
-        operadores: '#4682B4', // Azul acero
-        funciones: '#CD5C5C',  // Rojo indio
-        argumentos: '#B8860B'  // Dorado oscuro
+        variables: '#B8860B',  // Dorado 
+        ciclos: '#2E8B57',     // Verde 
+        operadores: '#4682B4', // Azul 
+        funciones: '#CD5C5C',  // Rojo 
+        argumentos: '#8B4513'  // Cafe
     };
     
 
