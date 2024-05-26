@@ -19,6 +19,10 @@ export const MatrixDisplay = ({ matrix }) => {
             } else if (value >= 67 && value <= 100) {
                 return 'App.red';
             }
+        } else if (typeof value === 'string') {
+            if (value == " ") {
+                return 'App.lightgrey'
+            }
         }
         return 'transparent';
     };
@@ -43,7 +47,7 @@ export const MatrixDisplay = ({ matrix }) => {
                                     }
                                 }}
                             >
-                                <Typography variant="body1" sx={{color: typeof val === 'number' ? 'App.white' : 'primary.main'}}>{val}</Typography>
+                                <Typography variant="body1" sx={{ color: typeof val === 'number' ? 'App.white' : 'primary.main' }}>{val}</Typography>
                             </Button>
                         </Grid>
                     ))}

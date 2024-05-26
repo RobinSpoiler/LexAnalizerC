@@ -9,7 +9,8 @@ import axios from 'axios';
 export const Overview = () => {
     const [view, setView] = useState('list'); // Estado para controlar la vista
     const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
-    const [data, setData] = useState(''); // Estado para controlar la data de compare
+    const [listData, setListData] = useState(''); // Estado para controlar la data de compare
+    const [matrixData, setMatrixData] = useState(''); // Estado para controlar la data de compare
 
     useEffect(() => {
         setAllFiles(handleGetFiles())
@@ -30,7 +31,7 @@ export const Overview = () => {
     let matriz = new Array(lenMatriz) 
 
     matriz = Array.from({ length: lenMatriz }, () => 1)
-    matriz[0] = " "
+    matriz[0] = ""
     for(const key in allfiles){
         matriz[key] = allfiles[key]["filename"]
         matriz[key * lendefila] = allfiles[key]["filename"]
@@ -38,21 +39,18 @@ export const Overview = () => {
         matriz[parseInt(key) + parseInt((key * lendefila))] = " "
     }
 
-    const porcentajes = Object.values(data).map(item => item.porcentaje);
+    const porcentajes = Object.values(matrixData).map(item => item.porcentaje);
 
-
-    console.log(matriz)
+    // console.log(matriz)
+    // console.log("porcentajes",porcentajes)
     let cont = 0
-    console.log("dadfd",porcentajes)
     for(let i = 0; i < matriz.length; i++){
-        console.log("ADFAfs", porcentajes[cont])
         if(matriz[i] == 1){
-            console.log("asdflkjasdfk")
             matriz[i] = porcentajes[cont]
             cont++
         }
     }
-    const matrix = {
+    const matrixFormat = {
         "size": Object.keys(allfiles).length,
         "data": matriz
     };
@@ -74,7 +72,7 @@ export const Overview = () => {
             const res = await response.json();
             setAllFiles(res);
 
-            console.log("handleGetFiles", allfiles)
+            // console.log("handleGetFiles", allfiles)
 
 
             console.log('Archivos subidos exitosamente');
@@ -98,7 +96,7 @@ export const Overview = () => {
                 sortedDict[index + 1] = item; // Adjust keys as necessary
             });
 
-            setData(sortedDict); // Use setData to update the data
+            setListData(sortedDict); // Use setData to update the data
         }
     }
 
@@ -113,8 +111,9 @@ export const Overview = () => {
                 },
                 body: allfiles
             });
-
+            setMatrixData(response.data)
             sortAndSetData(response.data)
+
             // Manejar los datos de respuesta
         } catch (error) {
             console.error('Error al comparar archivos:', error);
@@ -123,11 +122,15 @@ export const Overview = () => {
 
 
 
-
+    const MatrixView = () => (
+        <Grid item xs={12} align='center' sx={{ margin: '5px' }}>
+            <MatrixDisplay matrix={matrixFormat} />
+        </Grid>
+    );
 
     const ListView = () => (
         <>
-            {Object.entries(data).map(([key, value]) => (
+            {Object.entries(listData).map(([key, value]) => (
                 <Grid key={key} item xs={12} align='center' sx={{
                     margin: '5px',
 
@@ -138,11 +141,6 @@ export const Overview = () => {
         </>
     );
 
-    const MatrixView = () => (
-        <Grid item xs={12} align='center' sx={{ margin: '5px' }}>
-            <MatrixDisplay matrix={matrix} />
-        </Grid>
-    );
 
     return (
         <Box sx={{ width: '100%', position: 'relative' }}>
