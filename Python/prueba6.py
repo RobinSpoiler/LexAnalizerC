@@ -10,8 +10,6 @@ while (num1 > 0):
         print("impar")
     num1 -= num1
 
-
-
 if(1 == 1):
     print( "true")
 elif(1 == 1):

@@ -58,6 +58,7 @@ def cleanTokensList(tokensList):
         dospuntos = registroToken[1].find(':')
         linea = registroToken[1][:dospuntos]
         cleanTokensList.append((registroToken[0],registroToken[1].replace(linea+":", '')))
+    print("cleantokenlist",cleanTokensList)
     return cleanTokensList
 
 # def variables(cleanTokens):

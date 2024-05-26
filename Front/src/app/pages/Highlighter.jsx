@@ -4,9 +4,11 @@ import { NavBar } from '../Components';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-
 export const Highlighter = () => {
-    const [comparisonRes, setcomparisonRes] = useState({}); // Estado para controlar la data de compare
+    const [comparisonRes, setComparisonRes] = useState({});
+    const [fileData, setFileData] = useState({});
+    const [indices, setIndices] = useState({});
+    const [showContent, setShowContent] = useState(false); // Controlar la visibilidad de ambos archivos
 
     const location = useLocation();
     const { file_names } = location.state || {};
@@ -20,19 +22,12 @@ export const Highlighter = () => {
         { name: 'Comparador', route: '/highlighter' },
     ];
 
-
-    const [fileData, setFileData] = useState({});
-    const [content, setContent] = useState({});
-
-
     const fetchFileData = async (fileKey) => {
         try {
             const response = await fetch(`http://127.0.0.1:5000/getFileByName?name=${fileKey}`);
             if (response.ok) {
                 const fileData = await response.json();
                 setFileData(prev => ({ ...prev, [fileKey]: fileData.content }));
-                setContent(prev => ({ ...prev, [fileKey]: fileData.content }));
-
             } else {
                 console.error('Error fetching file content:', response.statusText);
             }
@@ -48,50 +43,55 @@ export const Highlighter = () => {
 
     const handleHighlights = async () => {
         try {
-
-            // Realizar la llamada al servidor utilizando Axios
             const response = await axios.post('http://127.0.0.1:5000/highlight', {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-
                 },
                 body: fileData
             });
 
-            const data = response.data
-
-            setcomparisonRes(data)
-
-            // Manejar los datos de respuesta
+            const data = response.data;
+            setComparisonRes(data);
         } catch (error) {
             console.error('Error al comparar archivos:', error);
         }
     };
 
-    // console.log(comparisonRes)
-
     useEffect(() => {
-        if (Object.keys(fileData).length == 2) {
+        if (Object.keys(fileData).length === 2) {
             handleHighlights();
         }
-    }, [fileData])
+    }, [fileData]);
 
+    useEffect(() => {
+        const updateIndices = (fileKey) => {
+            if (comparisonRes && comparisonRes[fileKey]) {
+                const semanticData = comparisonRes[fileKey]["semantico"];
+                const newIndices = [];
 
+                if (semanticData) {
+                    Object.values(semanticData).forEach(lineDataArray => {
+                        lineDataArray.forEach(lineData => {
+                            newIndices.push(lineData);
+                        });
+                    });
+                }
+                setIndices(prev => ({ ...prev, [fileKey]: newIndices }));
+            }
+        };
 
+        updateIndices(fileA);
+        updateIndices(fileB);
+    }, [comparisonRes, fileA, fileB]);
 
     const resaltarPalabras = (linea, indices) => {
-
-        console.log("Linea", linea)
-        console.log("indices", indices)
-
-
         const palabras = linea.split('');
         let resaltado = [];
         let palabraActual = '';
         let dentroDeResaltado = false;
 
         for (let i = 0; i < palabras.length; i++) {
-            if (indices.some(([inicio, fin]) => i >= inicio && i < fin)) {
+            if (indices.some(indexRange => i >= indexRange[0] && i < indexRange[1])) {
                 if (!dentroDeResaltado) {
                     if (palabraActual) {
                         resaltado.push(palabraActual);
@@ -120,39 +120,50 @@ export const Highlighter = () => {
         return resaltado;
     };
 
-    const handleSemanticClick = (fileKey) => {
-        const semanticData = comparisonRes[fileKey].semantico;
-        const indices = []
-        Object.entries(semanticData).forEach(([key, value]) => {
-            if(value.length > 0){
-                indices.push(value)
-            }
-        });
-        
-        const highlightedContent = resaltarPalabras(content[fileKey], indices);
+    const renderFileContent = (fileKey) => {
+        const content = fileData[fileKey];
+        const fileIndices = indices[fileKey] || [];
 
-        console.log(indices)
-        setContent(prevData => ({
-            ...prevData,
-            [fileKey]: highlightedContent,
-          }));
+        return (
+            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                {content && Array.isArray(fileIndices) && fileIndices.length > 0 && (
+                    content.split('\n').map((line, lineIndex) => {
+                        const lineIndices = fileIndices
+                            .filter(item => item.lineNumber === lineIndex + 1)
+                            .flatMap(item => item.indices);
+
+                        return (
+                            <div key={lineIndex}>
+                                {resaltarPalabras(line, lineIndices)}
+                            </div>
+                        );
+                    })
+                )}
+            </pre>
+        );
     };
 
+    const handleSemanticClick = () => {
+        setShowContent(prev => !prev);
+    };
 
     return (
-        <Grid container spacing={0} margin={0} justifyContent='center' alignContent='center' minHeight='100vh' minWidth='100vw'>
+        <Grid container spacing={0} margin={0} justifyContent='center' alignItems='center' minHeight='100vh' minWidth='100vw'>
             <NavBar pages={pages} />
 
-            <Grid container spacing={2} justifyContent='center' padding={2} marginTop='10vh'>
+            <Grid item xs={12} marginTop='15vh' align='center'>
+                <Button variant="contained" onClick={handleSemanticClick}>Semantic Info</Button>
+            </Grid>
 
-                {Object.keys(fileData).map((fileKey, index) => (
+            <Grid container spacing={2} justifyContent='center' padding={2} >
+
+                {[fileA, fileB].map((fileKey) => (
                     <Grid item xs={12} md={6} key={fileKey}>
                         <Paper elevation={3} style={{
                             height: '70vh',
                             padding: '15px',
                             overflow: 'auto',
                         }}
-
                             sx={{
                                 '&::-webkit-scrollbar': {
                                     width: '8px',
@@ -166,7 +177,6 @@ export const Highlighter = () => {
                                 },
                             }}
                         >
-
                             <Box display="flex" justifyContent="center">
                                 <Typography
                                     variant="h6"
@@ -174,7 +184,7 @@ export const Highlighter = () => {
                                         color: 'App.white',
                                         bgcolor: 'secondary.main',
                                         borderRadius: "22px",
-                                        px: 1, // Adds horizontal padding
+                                        px: 1,
                                         '&:hover': {
                                             backgroundColor: 'secondary.main'
                                         }
@@ -183,11 +193,7 @@ export const Highlighter = () => {
                                     {fileKey}
                                 </Typography>
                             </Box>
-                            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                                {content[fileKey]}
-                            </pre>
-                            <Button variant="contained" onClick={() => handleSemanticClick(fileKey)}>Semantic Info</Button>
-
+                            {showContent && renderFileContent(fileKey)}
                         </Paper>
                     </Grid>
                 ))}
