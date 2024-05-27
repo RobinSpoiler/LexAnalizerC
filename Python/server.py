@@ -177,12 +177,12 @@ def highlight():
     #Simple text comparisson
 
     textSimilarityFile1, textSimilarityFile2 = compareFilesAsText(fileContent1, fileContent2)
-    comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
-    comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
 
+    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}, {"string": textSimilarityFile1}
+    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2, cleanTokens2)}, {"string": textSimilarityFile2}
+    # comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
+    # comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
 
-    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}
-    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2, cleanTokens2)}
 
     print(comparison_results)
     return jsonify(comparison_results), 200
