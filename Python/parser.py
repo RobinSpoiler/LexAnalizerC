@@ -39,7 +39,7 @@ def getCleanList(data):
             merged[lineNumber] = {'lineNumber': lineNumber, 'indexes': [indexes]}
     return list(merged.values())
 
-def getTextSimilarityPercentage(textFile1, textFile2):
+def getTextSimilarityIndexes(textFile1, textFile2):
     similarityFile1 = []
     similarityFile2 = []
 
@@ -55,11 +55,11 @@ def getTextSimilarityPercentage(textFile1, textFile2):
     
     cleanSimilarityFile1 = getCleanList(similarityFile1)
     cleanSimilarityFile2 = getCleanList(similarityFile2)
-    return cleanSimilarityFile1, cleanSimilarityFile2
+    return {"similarity": cleanSimilarityFile1}, {"similarity": cleanSimilarityFile2}
 
 
 def compareFilesAsText(textFile1, textFile2):
-    similarityFile1, similarityFile2 = getTextSimilarityPercentage(textFile1, textFile2)
+    similarityFile1, similarityFile2 = getTextSimilarityIndexes(textFile1, textFile2)
     return similarityFile1, similarityFile2
 
 # -------Comparing files with tokens--------
