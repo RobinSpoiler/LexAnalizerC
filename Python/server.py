@@ -2,7 +2,7 @@
 
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText, cleanTokensList
+from parser import compareFilesWithTokens, compareFilesAsText, cleanTokensList, getTextSimilarityPercentage
 from tables import db, File
 from semanticDiff import getSemanticValues
 # import io
@@ -110,7 +110,7 @@ def compare_files():
             if(alumno1 != alumno2):
                 fileContent2 = allFilesRequest["body"][alumno2]["content"]
                 fileName2 = allFilesRequest["body"][alumno2]["filename"]
-                text_similarity = compareFilesAsText(fileContent1, fileContent2)
+                text_similarity = getTextSimilarityPercentage(fileContent1, fileContent2)
                 similarityKind, similarityValue,tokensList1, tokensList2 = compareFilesWithTokens(fileName1, fileName2,fileContent1, fileContent2)
                 porcentaje = (similarityKind + similarityValue + text_similarity) // 3
 
@@ -173,6 +173,13 @@ def highlight():
 
     cleanTokens1 = cleanTokensList(tokensList1)
     cleanTokens2 = cleanTokensList(tokensList2)
+
+    #Simple text comparisson
+
+    textSimilarityFile1, textSimilarityFile2 = compareFilesAsText(fileContent1, fileContent2)
+    comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
+    comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
+
 
     comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}
     comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2, cleanTokens2)}

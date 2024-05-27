@@ -4,19 +4,66 @@ import difflib
 import io
 
 # -------Comparing files as plain text--------
+
 def getPlainText(file):
     plainText = None
     with io.BytesIO(file.read()) as f:  # Lee el contenido del archivo en un buffer en memoria
         plainText = f.read()
     return plainText
 
-def getTextSimilarityPercentage(textFile1, textFile2):
-    return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
+def getIndexes(startIndex, endIndex, textFile):
+    lineNumber = 1
+    filteredLines = textFile.split('\n')
+    for line in filteredLines:
+        if startIndex < len(line):
+            break
+        # Sum one to include the line breaks
+        startIndex -= len(line) + 1
+        endIndex -= len(line) + 1
+        lineNumber += 1
+
+    indexes = [startIndex, endIndex]
+
+    return {'lineNumber': lineNumber,
+            'indexes': indexes
+            }
+
+def getCleanList(data):
+    merged = {}
+    for entry in data:
+        lineNumber = entry['lineNumber']
+        indexes = entry['indexes']
+        if lineNumber in merged:
+            merged[lineNumber]['indexes'].append(indexes)
+        else:
+            merged[lineNumber] = {'lineNumber': lineNumber, 'indexes': [indexes]}
+    return list(merged.values())
+
+def getTextSimilarityIndexes(textFile1, textFile2):
+    similarityFile1 = []
+    similarityFile2 = []
+
+    s = difflib.SequenceMatcher(None, textFile1, textFile2)
+    for block in s.get_matching_blocks():
+        startIndexFile1 = block.a
+        startIndexFile2 = block.b
+        similaritySize = block.size
+        # Change to the corresponding limit of size
+        if similaritySize > 3:
+            similarityFile1.append(getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1))
+            similarityFile2.append(getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2))
+    
+    cleanSimilarityFile1 = getCleanList(similarityFile1)
+    cleanSimilarityFile2 = getCleanList(similarityFile2)
+    return {"similarity": cleanSimilarityFile1}, {"similarity": cleanSimilarityFile2}
+
 
 def compareFilesAsText(textFile1, textFile2):
-    similarity = getTextSimilarityPercentage(textFile1, textFile2)
-    # print("Comparing character by character: they are " + str(similarity) +"% similar")
-    return similarity
+    similarityFile1, similarityFile2 = getTextSimilarityIndexes(textFile1, textFile2)
+    return similarityFile1, similarityFile2
+
+def getTextSimilarityPercentage(textFile1, textFile2):
+    return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
 
 # -------Comparing files with tokens--------
 def getBuffer(filecontent, filename):
