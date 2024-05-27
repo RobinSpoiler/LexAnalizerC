@@ -62,6 +62,9 @@ def compareFilesAsText(textFile1, textFile2):
     similarityFile1, similarityFile2 = getTextSimilarityIndexes(textFile1, textFile2)
     return similarityFile1, similarityFile2
 
+def getTextSimilarityPercentage(textFile1, textFile2):
+    return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
+
 # -------Comparing files with tokens--------
 def getBuffer(filecontent, filename):
     buf = None
