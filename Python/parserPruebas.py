@@ -7,28 +7,28 @@ def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
     for line in filteredLines:
-        if startIndex < len(line):
+        if startIndex < len(line) + 1:
             break
         # Sum one to include the line breaks
-        startIndex -= len(line) + 1
-        endIndex -= len(line) + 1
+        startIndex -= (len(line) + 1)
+        endIndex -= (len(line) + 1)
         lineNumber += 1
 
     indexes = [startIndex, endIndex]
 
     return {'lineNumber': lineNumber,
-            'indexes': indexes
+            'indices': indexes
             }
 
 def getCleanList(data):
     merged = {}
     for entry in data:
         lineNumber = entry['lineNumber']
-        indexes = entry['indexes']
+        indexes = entry['indices']
         if lineNumber in merged:
-            merged[lineNumber]['indexes'].append(indexes)
+            merged[lineNumber]['indices'].append(indexes)
         else:
-            merged[lineNumber] = {'lineNumber': lineNumber, 'indexes': [indexes]}
+            merged[lineNumber] = {'lineNumber': lineNumber, 'indices': [indexes]}
     return list(merged.values())
 
 
@@ -54,7 +54,7 @@ def getTextSimilarityIndexes(textFile1, textFile2):
     
     cleanSimilarityFile1 = getCleanList(similarityFile1)
     cleanSimilarityFile2 = getCleanList(similarityFile2)
-    return {"similarity": cleanSimilarityFile1}, {"similarity": cleanSimilarityFile2}
+    return {"texto": cleanSimilarityFile1}, {"texto": cleanSimilarityFile2}
 
 
 def compareFilesAsText(fileName1, fileName2):
@@ -68,16 +68,7 @@ def compareFilesAsText(fileName1, fileName2):
 # 
 def getBuffer(filecontent, filename):
     buf = None
-    # Check if the file exists and has a size greater than zero
-    # if file and file.seekable() and file.tell() > 0:
-        # Move the pointer to the beginning of the file
-        # file.seek(0)
-        # with io.BytesIO(file.read()) as f:
-            # Print file content for debugging
-            # file_content = f.read()
     buf = source.Buffer(filecontent, filename)
-    # else:
-    #     print("Error: File is empty or does not exist.")
     return buf
 
 
@@ -137,9 +128,6 @@ def compareFilesWithTokens(fileName1, fileName2,fileName1content, fileName2conte
     similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
     print("Comparing tokens by kind: they are " + str(similarityKind) +"% similar")
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
-    # print("tokensList1: ", tokensList1)
-    # print('\n')
-    # print("tokensList2: ", tokensList2)
     return similarityKind, similarityValue, tokensList1, tokensList2
 
 files = ["prueba1.py", "prueba2.py"] # "prueba3.py", "prueba4.py", "prueba5.py"]
