@@ -7,15 +7,14 @@ def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
     for line in filteredLines:
-        if startIndex < len(line) + 1:
+        if startIndex < len(line):
             break
         # Sum one to include the line breaks
         startIndex -= (len(line) + 1)
         endIndex -= (len(line) + 1)
         lineNumber += 1
 
-    indexes = [startIndex, endIndex]
-
+    indexes = [startIndex + 1, endIndex]
     return {'lineNumber': lineNumber,
             'indices': indexes
             }
@@ -51,7 +50,6 @@ def getTextSimilarityIndexes(textFile1, textFile2):
         if similaritySize > 1:
             similarityFile1.append(getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1))
             similarityFile2.append(getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2))
-    
     cleanSimilarityFile1 = getCleanList(similarityFile1)
     cleanSimilarityFile2 = getCleanList(similarityFile2)
     return {"texto": cleanSimilarityFile1}, {"texto": cleanSimilarityFile2}
@@ -130,7 +128,7 @@ def compareFilesWithTokens(fileName1, fileName2,fileName1content, fileName2conte
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
     return similarityKind, similarityValue, tokensList1, tokensList2
 
-files = ["prueba1.py", "prueba2.py"] # "prueba3.py", "prueba4.py", "prueba5.py"]
+files = ["prueba2.py", "prueba3.py"] # "prueba3.py", "prueba4.py", "prueba5.py"]
 
 for file1 in files:
     for file2 in files:
@@ -138,11 +136,7 @@ for file1 in files:
             print("\nComparing file " + file1 +" with " + file2)
             filename1 = file1
             filename2 = file2
-            uno = getPlainText(file1)
-            dos = getPlainText(file2)
             
-            print(uno)
-            print(dos)
-            
-            compareFilesWithTokens(file1, file2, uno, dos)
+            # compareFilesWithTokens(file1, file2, uno, dos)
             # compareFilesAsText(file1, file2)
+compareFilesAsText(files[0], files[1])

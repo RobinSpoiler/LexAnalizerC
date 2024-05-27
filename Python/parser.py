@@ -15,15 +15,14 @@ def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
     for line in filteredLines:
-        if startIndex < len(line) + 1:
+        if startIndex < len(line):
             break
         # Sum one to include the line breaks
         startIndex -= (len(line) + 1)
         endIndex -= (len(line) + 1)
         lineNumber += 1
 
-    indexes = [startIndex, endIndex]
-
+    indexes = [startIndex + 1, endIndex]
     return {'lineNumber': lineNumber,
             'indices': indexes
             }
