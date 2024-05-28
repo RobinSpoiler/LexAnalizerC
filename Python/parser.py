@@ -32,7 +32,8 @@ def getIndexes(startIndex, endIndex, textFile):
         endIndex -= (lineLength + 1)
         lineNumber += 1
     
-    indexes = [startIndex, endIndex]
+    indexes = [startIndex + 1, endIndex + 1]
+
     return {'lineNumber': lineNumber,
             'indices': indexes
             }
