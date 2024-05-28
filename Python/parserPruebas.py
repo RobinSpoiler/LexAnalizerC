@@ -18,13 +18,17 @@ def getIndexes(startIndex, endIndex, textFile):
         if startIndex == lineLength:
             startIndex -= lineLength
             endIndex -= lineLength
+            lineNumber += 1
             break
         # Substract the length of the line + 1 of the line break
         startIndex -= (lineLength + 1)
         endIndex -= (lineLength + 1)
         lineNumber += 1
+        print(" changed line")
     
     indexes = [startIndex + 1, endIndex + 2]
+    print("Indexes ", indexes)
+    print("Line number ", lineNumber)
     return {'lineNumber': lineNumber,
             'indices': indexes
             }
@@ -58,7 +62,12 @@ def getTextSimilarityIndexes(textFile1, textFile2):
         similaritySize = block.size
         # Change to the corresponding limit of size
         if similaritySize > 3:
+            print('Size ', similaritySize)
+            print('\nFirst -----------')
+            print("Word is ", textFile1[startIndexFile1: startIndexFile1 + similaritySize])
             similarityFile1.append(getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1))
+            print('\nSecond -----------')
+            print("Word is ", textFile2[startIndexFile2: startIndexFile2 + similaritySize])
             similarityFile2.append(getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2))
     cleanSimilarityFile1 = getCleanList(similarityFile1)
     cleanSimilarityFile2 = getCleanList(similarityFile2)
