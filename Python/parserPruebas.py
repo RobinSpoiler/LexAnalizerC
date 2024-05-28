@@ -24,8 +24,7 @@ def getIndexes(startIndex, endIndex, textFile):
         endIndex -= (lineLength + 1)
         lineNumber += 1
     
-    indexes = [startIndex + 1, endIndex + 1]
-
+    indexes = [startIndex + 1, endIndex + 2]
     return {'lineNumber': lineNumber,
             'indices': indexes
             }
@@ -58,7 +57,7 @@ def getTextSimilarityIndexes(textFile1, textFile2):
         startIndexFile2 = block.b
         similaritySize = block.size
         # Change to the corresponding limit of size
-        if similaritySize > 1:
+        if similaritySize > 3:
             similarityFile1.append(getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1))
             similarityFile2.append(getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2))
     cleanSimilarityFile1 = getCleanList(similarityFile1)
