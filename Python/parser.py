@@ -26,6 +26,7 @@ def getIndexes(startIndex, endIndex, textFile):
         if startIndex == lineLength:
             startIndex -= lineLength
             endIndex -= lineLength
+            lineNumber += 1
             break
         # Substract the length of the line + 1 of the line break
         startIndex -= (lineLength + 1)
