@@ -6,15 +6,25 @@ import difflib
 def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
+    
     for line in filteredLines:
-        if startIndex < len(line):
+        lineLength = len(line)
+        if startIndex < lineLength:
+            # Some lines have \t so we avoid including that with this statement
+            if endIndex > lineLength:
+                endIndex = lineLength - 1
             break
-        # Sum one to include the line breaks
-        startIndex -= (len(line) + 1)
-        endIndex -= (len(line) + 1)
+        # If the index is equal to the lineLenght, it means that is the first character of the next line
+        if startIndex == lineLength:
+            startIndex -= lineLength
+            endIndex -= lineLength
+            break
+        # Substract the length of the line + 1 of the line break
+        startIndex -= (lineLength + 1)
+        endIndex -= (lineLength + 1)
         lineNumber += 1
-
-    indexes = [startIndex + 1, endIndex]
+    
+    indexes = [startIndex, endIndex]
     return {'lineNumber': lineNumber,
             'indices': indexes
             }
