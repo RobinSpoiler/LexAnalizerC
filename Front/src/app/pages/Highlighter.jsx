@@ -29,7 +29,7 @@ export const Highlighter = () => {
         operadores: '#4682B4', // Azul acero
         funciones: '#CD5C5C',  // Rojo indio
         argumentos: '#8B4513', // Marrón
-        similarity: '#FF6347'  // Tomato
+        texto: '#FF6347'  // Tomato
     };
     
     const fetchFileData = async (fileKey) => {
@@ -91,11 +91,11 @@ export const Highlighter = () => {
                         });
                     }
                     if (data.string) {
-                        if (!newIndices.similarity) {
-                            newIndices.similarity = [];
+                        if (!newIndices.texto) {
+                            newIndices.texto = [];
                         }
-                        data.string.similarity.forEach(lineData => {
-                            newIndices.similarity.push(lineData);
+                        data.string.texto.forEach(lineData => {
+                            newIndices.texto.push(lineData);
                         });
                     }
                 });
@@ -152,7 +152,7 @@ export const Highlighter = () => {
                 {content && content.split('\n').map((line, lineIndex) => {
                     const lineIndices = fileIndices
                         .filter(item => item.lineNumber === lineIndex + 1)
-                        .flatMap(category == "similarity" ? item => item.indexes : item => item.indices);
+                        .flatMap(item => item.indices);
 
                     return (
                         <div key={lineIndex}>
