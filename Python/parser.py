@@ -15,23 +15,16 @@ def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
     similarities = []
-    print('-------')
-    print('Initial start index ', startIndex)
-    print('Initial end index', endIndex)
     
     for line in filteredLines:
         # if the start index is bigger than the end, then we're done getting the indexes
         if startIndex >= endIndex:
             break
-        print('---------')
-        print('Start index ', startIndex)
-        print('End index ', endIndex)
 
         lineLength = len(line)
 
         # If the start index is less than the length of the line it means that we can start getting indexes
         if startIndex < lineLength:
-            print("Start is less than line length")
             # If the end index is less than the line length it means that we're done getting indexes
             if endIndex < lineLength:
                 # the indexes will be the start index + 1 because it's 1-indexed and end index +2 because of that and because it's exclusive
@@ -53,11 +46,9 @@ def getIndexes(startIndex, endIndex, textFile):
                 endIndex -= (lineLength + 1)
         # If the index is equal to the lineLenght, it means that is the first character of the next line
         elif startIndex == lineLength:
-            print("start is equal to line length")
             startIndex = 0
-            endIndex -= lineLength
+            endIndex -= lineLength + 1
         else:
-            print("start is less than lineLength")
             # Substract the length of the line + 1 of the line break
             startIndex -= (lineLength + 1)
             endIndex -= (lineLength + 1)
