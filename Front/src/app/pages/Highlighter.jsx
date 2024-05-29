@@ -10,7 +10,7 @@ export const Highlighter = () => {
     const [indices, setIndices] = useState({});
     const [showContent, setShowContent] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
-
+    console.log(comparisonRes)
     const location = useLocation();
     const { file_names } = location.state || {};
 
@@ -24,14 +24,14 @@ export const Highlighter = () => {
     ];
 
     const categoryColors = {
-        variables: '#B8860B',  // Dorado 
-        ciclos: '#2E8B57',     // Verde 
-        operadores: '#4682B4', // Azul 
-        funciones: '#CD5C5C',  // Rojo 
-        argumentos: '#8B4513'  // Cafe
+        variables: '#B8860B',  // Dorado oscuro
+        ciclos: '#2E8B57',     // Verde mar
+        operadores: '#4682B4', // Azul acero
+        funciones: '#CD5C5C',  // Rojo indio
+        argumentos: '#8B4513', // Marrón
+        texto: '#FF6347'  // Tomato
     };
     
-
     const fetchFileData = async (fileKey) => {
         try {
             const response = await fetch(`http://127.0.0.1:5000/getFileByName?name=${fileKey}`);
@@ -76,17 +76,30 @@ export const Highlighter = () => {
     useEffect(() => {
         const updateIndices = (fileKey) => {
             if (comparisonRes && comparisonRes[fileKey]) {
-                const semanticData = comparisonRes[fileKey]["semantico"];
+                const fileData = comparisonRes[fileKey];
                 const newIndices = {};
 
-                if (semanticData) {
-                    Object.keys(semanticData).forEach(category => {
-                        newIndices[category] = [];
-                        semanticData[category].forEach(lineData => {
-                            newIndices[category].push(lineData);
+                fileData.forEach(data => {
+                    if (data.semantico) {
+                        Object.keys(data.semantico).forEach(category => {
+                            if (!newIndices[category]) {
+                                newIndices[category] = [];
+                            }
+                            data.semantico[category].forEach(lineData => {
+                                newIndices[category].push(lineData);
+                            });
                         });
-                    });
-                }
+                    }
+                    if (data.string) {
+                        if (!newIndices.texto) {
+                            newIndices.texto = [];
+                        }
+                        data.string.texto.forEach(lineData => {
+                            newIndices.texto.push(lineData);
+                        });
+                    }
+                });
+
                 setIndices(prev => ({ ...prev, [fileKey]: newIndices }));
             }
         };
@@ -134,7 +147,6 @@ export const Highlighter = () => {
     const renderFileContent = (fileKey, category) => {
         const content = fileData[fileKey];
         const fileIndices = indices[fileKey] ? indices[fileKey][category] || [] : [];
-
         return (
             <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
                 {content && content.split('\n').map((line, lineIndex) => {
@@ -142,7 +154,6 @@ export const Highlighter = () => {
                         .filter(item => item.lineNumber === lineIndex + 1)
                         .flatMap(item => item.indices);
 
-                    console.log("Linea: ", lineIndex + 1, "Contenido: ", line)
                     return (
                         <div key={lineIndex}>
                             {resaltarPalabras(line, lineIndices, categoryColors[category])}

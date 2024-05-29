@@ -14,29 +14,58 @@ def getPlainText(file):
 def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
+    similarities = []
+    
     for line in filteredLines:
-        if startIndex < len(line):
+        # if the start index is bigger than the end, then we're done getting the indexes
+        if startIndex >= endIndex:
             break
-        # Sum one to include the line breaks
-        startIndex -= len(line) + 1
-        endIndex -= len(line) + 1
+
+        lineLength = len(line)
+
+        # If the start index is less than the length of the line it means that we can start getting indexes
+        if startIndex < lineLength:
+            # If the end index is less than the line length it means that we're done getting indexes
+            if endIndex < lineLength:
+                # the indexes will be the start index + 1 because it's 1-indexed and end index +2 because of that and because it's exclusive
+                indexes = [startIndex + 1, endIndex + 2]
+                similarities.append({'lineNumber': lineNumber, 'indices': indexes})
+                break
+            
+            # If the end index is equal to the line length it means that it included the break line character, so we only sum 1 to it
+            if endIndex == lineLength:
+                indexes = [startIndex + 1, endIndex + 1]
+                similarities.append({'lineNumber': lineNumber, 'indices': indexes})
+                break
+
+            # If the end index is bigger than to the length of the line
+            if endIndex > lineLength:
+                indexes = [startIndex + 1, lineLength + 1]
+                similarities.append({'lineNumber': lineNumber, 'indices': indexes})
+                startIndex = 0
+                endIndex -= (lineLength + 1)
+        # If the index is equal to the lineLenght, it means that is the first character of the next line
+        elif startIndex == lineLength:
+            startIndex = 0
+            endIndex -= lineLength + 1
+        else:
+            # Substract the length of the line + 1 of the line break
+            startIndex -= (lineLength + 1)
+            endIndex -= (lineLength + 1)
+        
         lineNumber += 1
 
-    indexes = [startIndex, endIndex]
-
-    return {'lineNumber': lineNumber,
-            'indexes': indexes
-            }
+    return similarities
 
 def getCleanList(data):
     merged = {}
     for entry in data:
         lineNumber = entry['lineNumber']
-        indexes = entry['indexes']
+        indexes = entry['indices']
         if lineNumber in merged:
-            merged[lineNumber]['indexes'].append(indexes)
+            merged[lineNumber]['indices'].append(indexes)
         else:
-            merged[lineNumber] = {'lineNumber': lineNumber, 'indexes': [indexes]}
+            merged[lineNumber] = {'lineNumber': lineNumber, 'indices': [indexes]}
     return list(merged.values())
 
 def getTextSimilarityIndexes(textFile1, textFile2):
@@ -50,12 +79,12 @@ def getTextSimilarityIndexes(textFile1, textFile2):
         similaritySize = block.size
         # Change to the corresponding limit of size
         if similaritySize > 3:
-            similarityFile1.append(getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1))
-            similarityFile2.append(getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2))
+            similarityFile1 += getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1)
+            similarityFile2 += getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2)
     
     cleanSimilarityFile1 = getCleanList(similarityFile1)
     cleanSimilarityFile2 = getCleanList(similarityFile2)
-    return {"similarity": cleanSimilarityFile1}, {"similarity": cleanSimilarityFile2}
+    return {"texto": cleanSimilarityFile1}, {"texto": cleanSimilarityFile2}
 
 
 def compareFilesAsText(textFile1, textFile2):
@@ -68,16 +97,7 @@ def getTextSimilarityPercentage(textFile1, textFile2):
 # -------Comparing files with tokens--------
 def getBuffer(filecontent, filename):
     buf = None
-    # Check if the file exists and has a size greater than zero
-    # if file and file.seekable() and file.tell() > 0:
-        # Move the pointer to the beginning of the file
-        # file.seek(0)
-        # with io.BytesIO(file.read()) as f:
-            # Print file content for debugging
-            # file_content = f.read()
     buf = source.Buffer(filecontent, filename)
-    # else:
-    #     print("Error: File is empty or does not exist.")
     return buf
 
 def getTokenSimilarityPercentage(tokensFile1, tokensFile2):
@@ -105,33 +125,7 @@ def cleanTokensList(tokensList):
         dospuntos = registroToken[1].find(':')
         linea = registroToken[1][:dospuntos]
         cleanTokensList.append((registroToken[0],registroToken[1].replace(linea+":", '')))
-    # print("cleantokenlist",cleanTokensList)
     return cleanTokensList
-
-# def variables(cleanTokens):
-#     highVariables = []
-#     for elemento in cleanTokens[0]:
-#         if(elemento[0] == 'ident'):
-#             highVariables.append(elemento)
-#     return highVariables
-
-# def ifStatement(cleanTokens):
-#     # print("IF cleanTokens",cleanTokens)
-#     highIfelse = []
-#     for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
-#         # print("0",elemento[0])
-#         if(elemento[0] == 'if' or elemento[0] == 'elif' or elemento[0] == 'else'):
-#             highIfelse.append(elemento)
-#     return highIfelse
-
-# def loops(cleanTokens):
-#     # print("Loop cleanTokens",cleanTokens)
-#     highLoop = []
-#     for elemento in cleanTokens[0]: # No se por que aqui se tiene que accesar al elemmento 0
-#         if(elemento[0] == 'while' or elemento[0] == 'for'):
-#             highLoop.append(elemento)
-#     return highLoop
-    
 
 def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
     bufferFile1 = getBuffer(filecontent1, fileName1)
@@ -139,7 +133,6 @@ def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
 
     # Engine
     engine = diagnostic.Engine()
-    # print("engine: ", engine )
     # Getting tokens of file 1
     tokensFile1Kind, tokensFile1Value,tokensList1 = getTokensKindAndValue(bufferFile1, engine)
     # Getting tokens of file 2
@@ -151,7 +144,6 @@ def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
 
     # Getting similarity between two files by value
     similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
-    # print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
     tokensList1 = list(tokensList1)
     tokensList2 = list(tokensList2)
 
