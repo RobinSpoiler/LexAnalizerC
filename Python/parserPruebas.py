@@ -6,32 +6,57 @@ import difflib
 def getIndexes(startIndex, endIndex, textFile):
     lineNumber = 1
     filteredLines = textFile.split('\n')
+    similarities = []
+    print('-------')
+    print('Initial start index ', startIndex)
+    print('Initial end index', endIndex)
     
     for line in filteredLines:
+        # if the start index is bigger than the end, then we're done getting the indexes
+        if startIndex >= endIndex:
+            break
+        print('---------')
+        print('Start index ', startIndex)
+        print('End index ', endIndex)
+
         lineLength = len(line)
+
+        # If the start index is less than the length of the line it means that we can start getting indexes
         if startIndex < lineLength:
-            # Some lines have \t so we avoid including that with this statement
+            print("Start is less than line length")
+            # If the end index is less than the line length it means that we're done getting indexes
+            if endIndex < lineLength:
+                # the indexes will be the start index + 1 because it's 1-indexed and end index +2 because of that and because it's exclusive
+                indexes = [startIndex + 1, endIndex + 2]
+                similarities.append({'lineNumber': lineNumber, 'indices': indexes})
+                break
+            
+            # If the end index is equal to the line length it means that it included the break line character, so we only sum 1 to it
+            if endIndex == lineLength:
+                indexes = [startIndex + 1, endIndex + 1]
+                similarities.append({'lineNumber': lineNumber, 'indices': indexes})
+                break
+
+            # If the end index is bigger than to the length of the line
             if endIndex > lineLength:
-                endIndex = lineLength - 1
-            break
+                indexes = [startIndex + 1, lineLength + 1]
+                similarities.append({'lineNumber': lineNumber, 'indices': indexes})
+                startIndex = 0
+                endIndex -= (lineLength + 1)
         # If the index is equal to the lineLenght, it means that is the first character of the next line
-        if startIndex == lineLength:
-            startIndex -= lineLength
+        elif startIndex == lineLength:
+            print("start is equal to line length")
+            startIndex = 0
             endIndex -= lineLength
-            lineNumber += 1
-            break
-        # Substract the length of the line + 1 of the line break
-        startIndex -= (lineLength + 1)
-        endIndex -= (lineLength + 1)
+        else:
+            print("start is less than lineLength")
+            # Substract the length of the line + 1 of the line break
+            startIndex -= (lineLength + 1)
+            endIndex -= (lineLength + 1)
+        
         lineNumber += 1
-        print(" changed line")
-    
-    indexes = [startIndex + 1, endIndex + 2]
-    print("Indexes ", indexes)
-    print("Line number ", lineNumber)
-    return {'lineNumber': lineNumber,
-            'indices': indexes
-            }
+
+    return similarities
 
 def getCleanList(data):
     merged = {}
@@ -62,15 +87,18 @@ def getTextSimilarityIndexes(textFile1, textFile2):
         similaritySize = block.size
         # Change to the corresponding limit of size
         if similaritySize > 3:
-            print('Size ', similaritySize)
-            print('\nFirst -----------')
-            print("Word is ", textFile1[startIndexFile1: startIndexFile1 + similaritySize])
-            similarityFile1.append(getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1))
-            print('\nSecond -----------')
-            print("Word is ", textFile2[startIndexFile2: startIndexFile2 + similaritySize])
-            similarityFile2.append(getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2))
+            # print('Size ', similaritySize)
+            # print('\nFirst -----------')
+            # print("Word is ", textFile1[startIndexFile1: startIndexFile1 + similaritySize])
+            similarityFile1 += getIndexes(startIndexFile1, startIndexFile1 + similaritySize - 1, textFile1)
+            # print('\nSecond -----------')
+            # print("Word is ", textFile2[startIndexFile2: startIndexFile2 + similaritySize])
+            similarityFile2 += getIndexes(startIndexFile2, startIndexFile2 + similaritySize - 1, textFile2)
+
     cleanSimilarityFile1 = getCleanList(similarityFile1)
+    print('sim file 1', cleanSimilarityFile1)
     cleanSimilarityFile2 = getCleanList(similarityFile2)
+    print('sim file 2', cleanSimilarityFile2)
     return {"texto": cleanSimilarityFile1}, {"texto": cleanSimilarityFile2}
 
 
@@ -147,7 +175,7 @@ def compareFilesWithTokens(fileName1, fileName2,fileName1content, fileName2conte
     print("Comparing tokens by value: they are " + str(similarityValue) +"% similar")
     return similarityKind, similarityValue, tokensList1, tokensList2
 
-files = ["prueba2.py", "prueba3.py"] # "prueba3.py", "prueba4.py", "prueba5.py"]
+files = ["prueba2.py", "prueba5.py"] # "prueba3.py", "prueba4.py", "prueba5.py"]
 
 for file1 in files:
     for file2 in files:
