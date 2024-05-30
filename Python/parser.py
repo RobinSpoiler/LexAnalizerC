@@ -106,26 +106,26 @@ def getTokenSimilarityPercentage(tokensFile1, tokensFile2):
 def getTokensKindAndValue(buffer, engine):
     tokensKindFile = []
     tokensValueFile = []
-    tokensList = []
-    
+    tokensListandLoc = []
     
     lex = lexer.Lexer(buffer, (3,4), engine)
     for token in lex:
-        tokensList.append((token.kind, str(token.loc)[11:]))
+        tokenloc = str(token.loc)
+        # Location in format line : startIndex - line : endIndex
+        indexLocation = tokenloc[tokenloc.find(':') + 1:]
+        if(str(token.kind) != "dedent" and str(token.kind) != "indent"):
+            linea = indexLocation[:indexLocation.find(':')]
+            indexLocation = indexLocation.replace(linea+":", '')
+        # Token and index location format : ('ident', '20-34') except dedent/indent/newline
+        tokensListandLoc.append((token.kind, indexLocation))
+        
         tokensKindFile.append(token.kind)
         if token.value is None:
             tokensValueFile.append(token.kind)
         else:
             tokensValueFile.append(token.value)
-    return tokensKindFile, tokensValueFile, tokensList
-
-def cleanTokensList(tokensList):
-    cleanTokensList = []
-    for registroToken in tokensList:
-        dospuntos = registroToken[1].find(':')
-        linea = registroToken[1][:dospuntos]
-        cleanTokensList.append((registroToken[0],registroToken[1].replace(linea+":", '')))
-    return cleanTokensList
+    # print("tokensListandLoc", tokensListandLoc)
+    return tokensKindFile, tokensValueFile, tokensListandLoc
 
 def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
     bufferFile1 = getBuffer(filecontent1, fileName1)
@@ -134,9 +134,9 @@ def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
     # Engine
     engine = diagnostic.Engine()
     # Getting tokens of file 1
-    tokensFile1Kind, tokensFile1Value,tokensList1 = getTokensKindAndValue(bufferFile1, engine)
+    tokensFile1Kind, tokensFile1Value,tokensListandLoc1 = getTokensKindAndValue(bufferFile1, engine)
     # Getting tokens of file 2
-    tokensFile2Kind, tokensFile2Value, tokensList2  = getTokensKindAndValue(bufferFile2, engine)
+    tokensFile2Kind, tokensFile2Value, tokensListandLoc2  = getTokensKindAndValue(bufferFile2, engine)
     
     # Getting similarity between two files by kind
     similarityKind = getTokenSimilarityPercentage(tokensFile1Kind, tokensFile2Kind)
@@ -144,7 +144,7 @@ def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
 
     # Getting similarity between two files by value
     similarityValue = getTokenSimilarityPercentage(tokensFile1Value, tokensFile2Value)
-    tokensList1 = list(tokensList1)
-    tokensList2 = list(tokensList2)
+    tokensListandLoc1 = list(tokensListandLoc1)
+    tokensListandLoc2 = list(tokensListandLoc2)
 
-    return similarityKind, similarityValue, tokensList1, tokensList2
+    return similarityKind, similarityValue, tokensListandLoc1, tokensListandLoc2
