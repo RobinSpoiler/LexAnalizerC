@@ -122,24 +122,6 @@ def compare_files():
     # print(data)
     
     
-    # comparison_results = {
-    #     'text_similarity': text_similarity,
-    #     'token_similarity_kind': token_similarity_kind,
-    #     'token_similarity_value': token_similarity_value,
-    #     'tokensList1': tokensList1,
-    #     'tokensList2': tokensList2,
-    #     'cleanTokensList1': cleanTokens1,
-    #     'cleanTokensList2': cleanTokens2,
-    #     'variables1' : highVariables1,
-    #     'variables2' : highVariables2,
-    #     'ifstatements1' : hightIfelse1,
-    #     'ifstatements2' :hightIfelse2,
-    #     'loops1': highLoops1,
-    #     'loops2': highLoops2,
-
-    
-    #     }
-    # return jsonify(comparison_results)
     return data
 
 
@@ -178,13 +160,13 @@ def highlight():
 
     textSimilarityFile1, textSimilarityFile2 = compareFilesAsText(fileContent1, fileContent2)
 
-    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1, cleanTokens1)}, {"string": textSimilarityFile1}
-    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2, cleanTokens2)}, {"string": textSimilarityFile2}
+    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1.splitlines(), cleanTokens1)}, {"string": textSimilarityFile1}
+    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2.splitlines(), cleanTokens2)}, {"string": textSimilarityFile2}
     # comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
     # comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
 
 
-    print(comparison_results)
+    # print(comparison_results)
     return jsonify(comparison_results), 200
 
 
