@@ -9,8 +9,7 @@ loopsList = ['while', 'for']
 arithmeticOp = ['+', '-', '*', '/', '//', '**', '%']
 assignmentOp = ["=", "+=", "-=", "*=", "/=", "//=", "%=", "**="]
 comparisonOp = ["==", "!=", "<", ">", "<=", ">="]
-membershipOp = ['in', 'is']
-operatorsList = arithmeticOp + assignmentOp + comparisonOp + membershipOp
+operatorsList = arithmeticOp + assignmentOp + comparisonOp 
 
 """
 returns:
@@ -64,7 +63,8 @@ def getOperators(tokens):
 			lineNumber += 1
 		if token in operatorsList:
 			# Index has format "17-18"
-			start, end = [int(x) for x in index.split('-')]
+			start = int(index.split('-')[0])
+			end = start + len(token)
 			indexes.append([start, end])
 	return operators
 
@@ -78,13 +78,13 @@ def getFunctions(linesOfCode):
 		if not line.startswith("#") and len(line) > 0:
 			match = re.search(functionRegex, line)
 			if match:
-				funciones.append([formatInfo(lineNumber, [match.start(), match.end()])])
+				funciones.append(formatInfo(lineNumber, [[match.start() + 1, match.end() + 1]]))
 			lineNumber += 1
 	return funciones
 
 def getArguments(linesOfCode):
 	# matches: "  comprar_carro(30000, "Nissan", "Sentra", 2019)"
-	argRegex = r"^\s*[a-zA-Z_][a-zA-Z0-9_]*\(([a-zA-Z0-9,_\s\"\'\.]*)\)"
+	argRegex = r"[a-zA-Z_][a-zA-Z0-9_]*\(([a-zA-Z0-9,_\s\"\'\.]*)\)"
 	lineNumber = 1
 	args = []
 	indexes = []
@@ -95,7 +95,7 @@ def getArguments(linesOfCode):
 				# Get only the arguments
 				captured_args = match.group(1)
 				# Find where the arguments start
-				index_count = line.find(captured_args)
+				index_count = match.start(1)
 				# Remove what is before the args
 				line = line[index_count:]
 				# Split arguments and remove extra spaces
@@ -104,11 +104,11 @@ def getArguments(linesOfCode):
 				for arg in split_args:
 					start_index = line.find(arg) + index_count
 					end_index = start_index + len(arg)
-					indexes.append([start_index, end_index])
+					indexes.append([start_index + 1, end_index + 1])
 					index_count = end_index
 					# Removing part of the line to avoid repetitions
 					line = line[(len(arg) + line.find(arg)):]
-				args.append([formatInfo(lineNumber, indexes)])
+				args.append(formatInfo(lineNumber, indexes))
 			lineNumber += 1
 			indexes = []
 	return args
