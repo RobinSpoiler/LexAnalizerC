@@ -24,12 +24,13 @@ export const Highlighter = () => {
     ];
 
     const categoryColors = {
-        variables: '#B8860B',  // Dorado oscuro
-        ciclos: '#2E8B57',     // Verde mar
-        operadores: '#4682B4', // Azul acero
-        funciones: '#CD5C5C',  // Rojo indio
-        argumentos: '#8B4513', // Marrón
-        texto: '#FF6347'  // Tomato
+        variables: '#B8860B',  // Dorado 
+        ciclos: '#2E8B57',     // Verde
+        operadores: '#4682B4', // Azul 
+        funciones: '#CD5C5C',  // Rojo 
+        argumentos: '#8B4513', // Cafe
+        texto: '#FF6347',  // Rojo-naranja-rosa ish
+        tokens: '#CA53CB' //Morado
     };
     
     const fetchFileData = async (fileKey) => {
@@ -96,6 +97,14 @@ export const Highlighter = () => {
                         }
                         data.string.texto.forEach(lineData => {
                             newIndices.texto.push(lineData);
+                        });
+                    }
+                    if (data.token) {
+                        if (!newIndices.tokens) {
+                            newIndices.tokens = [];
+                        }
+                        data.token.tokens.forEach(lineData => {
+                            newIndices.tokens.push(lineData);
                         });
                     }
                 });
