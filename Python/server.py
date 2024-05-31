@@ -2,7 +2,7 @@
 
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from parser import compareFilesWithTokens, compareFilesAsText, getTextSimilarityPercentage
+from parser import compareFilesWithTokens, compareFilesAsText, getTextSimilarityPercentage, getTokenForHighlight
 from tables import db, File
 from semanticDiff import getSemanticValues
 # import io
@@ -111,7 +111,7 @@ def compare_files():
                 fileContent2 = allFilesRequest["body"][alumno2]["content"]
                 fileName2 = allFilesRequest["body"][alumno2]["filename"]
                 text_similarity = getTextSimilarityPercentage(fileContent1, fileContent2)
-                similarityKind, similarityValue,tokensListandLoc1, tokensListandLoc2 = compareFilesWithTokens(fileName1, fileName2,fileContent1, fileContent2)
+                similarityKind, similarityValue,tokensListandLoc1, tokensListandLoc2, bloques = compareFilesWithTokens(fileName1, fileName2,fileContent1, fileContent2)
                 porcentaje = (similarityKind + similarityValue + text_similarity) // 3
                 data[compNum] = {"id": '%s vs %s' % (fileName1, fileName2), "file_names":[fileName1,fileName2], "porcentaje": porcentaje}
                 compNum += 1
@@ -146,17 +146,17 @@ def highlight():
     fileContent1 = allFilesRequest["body"][arrNames[0]]
     fileContent2 = allFilesRequest["body"][arrNames[1]]
 
-    similarityKind, similarityValue, tokensListandLoc1, tokensListandLoc2 = compareFilesWithTokens(arrNames[0], arrNames[1],fileContent1, fileContent2)
+    similarityKind, similarityValue, tokensListandLoc1, tokensListandLoc2, bloques = compareFilesWithTokens(arrNames[0], arrNames[1],fileContent1, fileContent2)
 
-    #Simple text comparisson
+    #Simple text comparison
 
     textSimilarityFile1, textSimilarityFile2 = compareFilesAsText(fileContent1, fileContent2)
+    tokenSimilarityFile1, tokenSimilarityFile2 = getTokenForHighlight(tokensListandLoc1, tokensListandLoc2, bloques)
 
-    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1.splitlines(), tokensListandLoc1)}, {"string": textSimilarityFile1}
-    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2.splitlines(), tokensListandLoc2)}, {"string": textSimilarityFile2}
+    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1.splitlines(), tokensListandLoc1)}, {"string": textSimilarityFile1}, {"token": {"tokens": tokenSimilarityFile1}}
+    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2.splitlines(), tokensListandLoc2)}, {"string": textSimilarityFile2}, {"token": {"tokens": tokenSimilarityFile2}}
     # comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
     # comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
-
 
     # print("comparison_results",comparison_results)
     return jsonify(comparison_results), 200

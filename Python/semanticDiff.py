@@ -23,7 +23,7 @@ def getVariables(tokens):
 	lineNumber = 1
 	indexes = []
 	variables = []
-	for token, index in tokens:
+	for token, index, _line in tokens:
 		if token == newline:
 			if len(indexes) > 0:
 				variables.append(formatInfo(lineNumber, indexes))
@@ -39,7 +39,7 @@ def getLoops(tokens):
 	lineNumber = 1
 	indexes = []
 	loops = []
-	for token, index in tokens:
+	for token, index, _line in tokens:
 		if token == newline:
 			if len(indexes) > 0:
 				loops.append(formatInfo(lineNumber, indexes))
@@ -55,7 +55,7 @@ def getOperators(tokens):
 	lineNumber = 1
 	indexes = []
 	operators = []
-	for token, index in tokens:
+	for token, index, _line in tokens:
 		if token == newline:
 			if len(indexes) > 0:
 				operators.append(formatInfo(lineNumber, indexes))
