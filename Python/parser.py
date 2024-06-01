@@ -132,12 +132,10 @@ def getTokenSimilarity(tokenValue1, tokenValue2):
     bloques = []
     for block in matches.get_matching_blocks():
         bloques.append([block[0], block[1], block[2]])
-    # print("Blpques og: ", bloques)
     bloques.pop()
     return bloques
 
 def getTokenUbication(tokens, similitud, lineaFAnte):
-    # print("tokens: " ,tokens)
     first = tokens[0]
 
     if (first[0] == "indent" or first[0] == "dedent"):
@@ -166,9 +164,6 @@ def getTokenUbication(tokens, similitud, lineaFAnte):
             else:
                 ubi = int(token[1])
 
-            if(ubi > 1):
-                ubi -= 1
-
             if (lineaI == linea):
                 if (lineaI == lineaFAnte):
                     similitud[len(similitud)-1]["indices"].append([ubiI, ubi])               
@@ -184,10 +179,7 @@ def getTokenUbication(tokens, similitud, lineaFAnte):
         lineaF = int(last[1][:dospuntos])
         ubiF = int(last[1][dospuntos+1:])
 
-        if(ubiF > 1):
-            ubiF -= 1
     elif (last[0] == "newline"):
-        # print("es newline")
         lineaF = linea
         ubiF = ubi
     else:
@@ -200,14 +192,12 @@ def getTokenUbication(tokens, similitud, lineaFAnte):
             ubiF = int(last[1])
 
     if (lineaF == lineaI):
-        # print("no encontro newline")
         #No encontro un newline
         if (lineaF == lineaFAnte):
             similitud[len(similitud)-1]["indices"].append([ubiI, ubiF])
         elif (linea != lineaF):
             similitud.append({'lineNumber': int(lineaF), 'indices': [[ubiI, ubiF]]})
     else:
-        # print("se mete")
         #Si encontro un newline
         if (linea != lineaF):
             similitud.append({'lineNumber': int(lineaF), 'indices': [[1, ubiF]]})
@@ -229,22 +219,16 @@ def getTokenForHighlight(tokensStream1, tokensStream2, bloques):
 
     lineaF1 = 0
     lineaF2 = 0
-    # print("Archovo 1: ", tokensStream1)
-    # print("Archovo 2: ", tokensStream2)
 
     for bloque in bloques:
-        # print("parte 1")
         #Analisis para achivo 1 -----------------------------------------
         tokens1 = tokensStream1[bloque[0]:bloque[0] + bloque[2]]
         similitud1, lineaF1= getTokenUbication(tokens1, similitud1, lineaF1)
 
-        # print("parte 2")
         #Analisis para archivo 2 -----------------------------------------
         tokens2 = tokensStream2[bloque[1]:bloque[1] + bloque[2]]
         similitud2, lineaF2 = getTokenUbication(tokens2, similitud2, lineaF2)
 
-    # print("Similutud1 final",similitud1) #se borra
-    # print("Similutud2 final",similitud2) #se borra
     return similitud1, similitud2
 
 def compareFilesWithTokens(fileName1, fileName2,filecontent1, filecontent2):
