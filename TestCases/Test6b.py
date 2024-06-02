@@ -1,10 +1,26 @@
-def twoSum(nums, target):
-    numMap = {}
-    n = len(nums)
-    for i in range(n):
-        numMap[nums[i]] = i
-    for i in range(n):
-        complement = target - nums[i]
-        if complement in numMap and numMap[complement] != i:
-            return [i, numMap[complement]]
-    return [] 
+def max_en_lista(numeros):
+    if not numeros:
+        return None
+    maximo = numeros[0]
+    for numero in numeros:
+        if numero > maximo:
+            maximo = numero
+    return maximo
+def leer_numeros():
+    lista = []
+    numeros_str = input("Introduce una lista de números separados por espacios: ")
+    for num_str in numeros_str.split():
+        try:
+            lista.append(int(num_str))
+        except ValueError:
+            print(f"'{num_str}' no es un número válido y será ignorado.")
+    return lista
+def main():
+    numeros = leer_numeros()
+    if numeros:
+        maximo = max_en_lista(numeros)
+        print(f"El valor máximo en la lista es: {maximo}")
+    else:
+        print("La lista proporcionada está vacía o no contiene números válidos.")
+if __name__ == "__main__":
+    main()
