@@ -9,7 +9,10 @@ export const Highlighter = () => {
     const [fileData, setFileData] = useState({});
     const [indices, setIndices] = useState({});
     const [selectedCategory, setSelectedCategory] = useState(null);
-    console.log(comparisonRes)
+    const [isNivel1, setIsNivel1] = useState(false);
+    const [isNivel2, setIsNivel2] = useState(false);
+    const [isNivel3, setIsNivel3] = useState(false);
+
     const location = useLocation();
     const { file_names } = location.state || {};
 
@@ -23,13 +26,13 @@ export const Highlighter = () => {
     ];
 
     const categoryColors = {
-        variables: '#B8860B',  // Dorado 
-        ciclos: '#2E8B57',     // Verde
-        operadores: '#4682B4', // Azul 
-        funciones: '#CD5C5C',  // Rojo 
-        argumentos: '#8B4513', // Cafe
-        texto: '#FF6347',  // Rojo-naranja-rosa ish
-        tokens: '#CA53CB' //Morado
+        variables: '#8851B6',  // Morado 
+        ciclos: '#4056B6',     // Azul morado
+        operadores: '#0880F2', // Azul medio 
+        funciones: '#31C1EC',  // Azul claro 
+        argumentos: '#4AB7A3', // Azul verdoso
+        texto: '#2F9A7D',      // Rojo-naranja-rosa
+        tokens: '#0FADCC'      // Morado
     };
 
     const fetchFileData = async (fileKey) => {
@@ -184,7 +187,25 @@ export const Highlighter = () => {
     };
 
     const handleCategoryClick = (category) => {
-        setSelectedCategory(category);
+        if (category === 'nivel3') {
+            setSelectedCategory('nivel3');
+            setIsNivel3(true);
+            setIsNivel2(false);
+            setIsNivel1(false);
+
+        }
+        if (category === 'nivel2') {
+            setSelectedCategory('tokens');
+            setIsNivel3(false);
+            setIsNivel2(true);
+            setIsNivel1(false);
+        }
+        if (category === 'nivel1') {
+            setSelectedCategory('texto');
+            setIsNivel3(false);
+            setIsNivel2(false);
+            setIsNivel1(true);
+        }
     };
 
     return (
@@ -193,17 +214,106 @@ export const Highlighter = () => {
 
             <Grid item xs={12} marginTop='15vh' align='center'>
                 <Box display="flex" justifyContent="center" gap={2}>
-                    {Object.keys(categoryColors).map((category) => (
-                        <Button
-                            key={category}
-                            variant="contained"
-                            onClick={() => handleCategoryClick(category)}
-                            style={{ backgroundColor: categoryColors[category] }}
-                        >
-                            {category.charAt(0).toUpperCase() + category.slice(1)}
-                        </Button>
-                    ))}
+                    <Button
+                        variant="contained"
+                        onClick={() => handleCategoryClick('nivel1')}
+                        sx={{
+                            boxShadow: 'none', 
+                            backgroundColor: isNivel1 ? categoryColors[selectedCategory] : 'transparent', 
+                            textTransform: 'capitalize', 
+                            borderRadius: 4,
+                            border: isNivel1 ? 0 : 1,
+                            borderColor: 'secondary.main',
+                            color: isNivel1 ? 'App.white' : 'App.black',
+                            '&:hover': {
+                                backgroundColor: isNivel1 ? categoryColors[selectedCategory] : 'transparent',
+                            },
+                            '&:focus': {
+                                outline: 'none',
+                            },
+                            '&.Mui-focusVisible': {
+                                outline: 'none',
+                            },
+                        }}
+                    >
+                        Nivel 1
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => handleCategoryClick('nivel2')}
+                        sx={{
+                            boxShadow: 'none', 
+                            backgroundColor: isNivel2 ? categoryColors[selectedCategory] : 'transparent', 
+                            textTransform: 'capitalize', 
+                            borderRadius: 4,
+                            border: isNivel2 ? 0 : 1,
+                            borderColor: 'secondary.main',
+                            color: isNivel2 ? 'App.white' : 'App.black',
+                            '&:hover': {
+                                backgroundColor: isNivel2 ? categoryColors[selectedCategory] : 'transparent',
+                            },
+                            '&:focus': {
+                                outline: 'none',
+                            },
+                            '&.Mui-focusVisible': {
+                                outline: 'none',
+                            },
+                        }}
+                    >
+                        Nivel 2
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => handleCategoryClick('nivel3')}
+                        sx={{
+                            boxShadow: 'none', 
+                            backgroundColor: isNivel3 ? 'secondary.main' : 'transparent', 
+                            textTransform: 'capitalize', 
+                            borderRadius: 4,
+                            border: isNivel3 ? 0 : 1,
+                            borderColor: 'secondary.main',
+                            color: isNivel3 ? 'App.white' : 'App.black',
+                            '&:hover': {
+                                backgroundColor: isNivel3 ? 'secondary.main' : 'transparent',
+                            },
+                            '&:focus': {
+                                outline: 'none',
+                            },
+                            '&.Mui-focusVisible': {
+                                outline: 'none',
+                            },
+                        }}
+                    >
+                        Nivel 3
+                    </Button>
                 </Box>
+
+                {isNivel3 && (
+                    <Box display="flex" justifyContent="center" gap={2} marginTop={2}>
+                        {['variables', 'ciclos', 'operadores', 'funciones', 'argumentos'].map((category) => (
+                            <Button
+                                key={category}
+                                variant="contained"
+                                onClick={() => setSelectedCategory(category)}
+                                sx={{ 
+                                    backgroundColor: categoryColors[category], 
+                                    textTransform: 'capitalize',
+                                    '&:hover': {
+                                        backgroundColor: categoryColors[category],
+                                    },
+                                    '&:focus': {
+                                        outline: 'none',
+                                    },
+                                    '&.Mui-focusVisible': {
+                                        outline: 'none',
+                                    }, 
+                                }}
+                            >
+                                {category.charAt(0).toUpperCase() + category.slice(1)}
+                            </Button>
+                        ))}
+                    </Box>
+                )}
             </Grid>
 
             <Grid container spacing={2} justifyContent='center' padding={2} >
