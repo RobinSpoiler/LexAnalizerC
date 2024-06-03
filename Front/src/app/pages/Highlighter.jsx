@@ -1,8 +1,9 @@
-import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { NavBar } from '../Components';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { GridExpandMoreIcon } from '@mui/x-data-grid';
 
 export const Highlighter = () => {
     const [comparisonRes, setComparisonRes] = useState({});
@@ -12,6 +13,7 @@ export const Highlighter = () => {
     const [isNivel1, setIsNivel1] = useState(false);
     const [isNivel2, setIsNivel2] = useState(false);
     const [isNivel3, setIsNivel3] = useState(false);
+    const [expandedExpander, setExpandedExpander] = useState('main');
 
     const location = useLocation();
     const { file_names } = location.state || {};
@@ -26,13 +28,15 @@ export const Highlighter = () => {
     ];
 
     const categoryColors = {
-        variables: '#8851B6',  // Morado 
-        ciclos: '#4056B6',     // Azul morado
-        operadores: '#0880F2', // Azul medio 
-        funciones: '#31C1EC',  // Azul claro 
-        argumentos: '#4AB7A3', // Azul verdoso
-        texto: '#2F9A7D',      // Rojo-naranja-rosa
-        tokens: '#0FADCC'      // Morado
+        arguments: '#4AB7A3',
+        enteros: '#31C1EC',
+        floats: '#0880F2',
+        identifiers: '#8851B6',
+        loops: '#4056B6',
+        operators: '#2F9A7D',
+        strings: '#E94A4A',
+        texto: '#2F9A7D',
+        tokens: '#0FADCC'
     };
 
     const fetchFileData = async (fileKey) => {
@@ -76,6 +80,7 @@ export const Highlighter = () => {
         }
     }, [fileData]);
 
+
     useEffect(() => {
         const updateIndices = (fileKey) => {
             if (comparisonRes && comparisonRes[fileKey]) {
@@ -88,11 +93,31 @@ export const Highlighter = () => {
                             if (!newIndices[category]) {
                                 newIndices[category] = [];
                             }
-                            data.semantico[category].forEach(lineData => {
-                                newIndices[category].push(lineData);
-                            });
+
+                            const categoryData = data.semantico[category].characteristics;
+                            // console.log(data.semantico[category])
+                            if (categoryData) {
+                                // Itera sobre las características de la categoría
+                                Object.keys(categoryData).forEach(characteristic => {
+                                    const characteristicData = categoryData[characteristic];
+                                    // Verifica si la característica tiene una ubicación definida
+                                    if (characteristicData && characteristicData.location && characteristicData.cantidad) {
+                                        // Accede a los índices dentro de la propiedad location
+                                        characteristicData.location.forEach(location => {
+                                            // Guarda los índices y el número de línea en newIndices
+                                            newIndices[category].push({
+                                                characteristic: characteristic,
+                                                indices: location.indices,
+                                                lineNumber: location.lineNumber,
+                                            });
+                                        });
+                                    }
+                                });
+                            }
+                            newIndices[category].push(data.semantico[category].code)
                         });
                     }
+
                     if (data.string) {
                         if (!newIndices.texto) {
                             newIndices.texto = [];
@@ -118,6 +143,8 @@ export const Highlighter = () => {
         updateIndices(fileA);
         updateIndices(fileB);
     }, [comparisonRes, fileA, fileB]);
+
+    console.log(indices)
 
     const resaltarPalabras = (linea, indices, color) => {
         const palabras = linea.split('');
@@ -156,23 +183,45 @@ export const Highlighter = () => {
     };
 
     const renderFileContent = (fileKey, category) => {
-        const content = fileData[fileKey];
-        const fileIndices = indices[fileKey] ? indices[fileKey][category] || [] : [];
-        return (
-            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                {content && content.split('\n').map((line, lineIndex) => {
-                    const lineIndices = fileIndices
-                        .filter(item => item.lineNumber === lineIndex + 1)
-                        .flatMap(item => item.indices);
+        if (isNivel3) {
+            console.log("categoria", category)
+            const size = indices[fileKey][category].length;
+            const content = indices[fileKey][category][size - 1];
+            const fileIndices = indices[fileKey] ? indices[fileKey][category] || [] : [];
+            return (
+                <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                    {content && content.split('\n').map((line, lineIndex) => {
+                        const lineIndices = fileIndices
+                            .filter(item => item.lineNumber === lineIndex + 1 && item.characteristic === selectedCategory)
+                            .flatMap(item => item.indices);
+                        return (
+                            <div key={lineIndex}>
+                                {resaltarPalabras(line, lineIndices, categoryColors[selectedCategory])}
+                            </div>
+                        );
+                    })}
+                </pre>
+            );
 
-                    return (
-                        <div key={lineIndex}>
-                            {resaltarPalabras(line, lineIndices, categoryColors[category])}
-                        </div>
-                    );
-                })}
-            </pre>
-        );
+        } else {
+            const content = fileData[fileKey];
+            const fileIndices = indices[fileKey] ? indices[fileKey][category] || [] : [];
+            return (
+                <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                    {content && content.split('\n').map((line, lineIndex) => {
+                        const lineIndices = fileIndices
+                            .filter(item => item.lineNumber === lineIndex + 1)
+                            .flatMap(item => item.indices);
+
+                        return (
+                            <div key={lineIndex}>
+                                {resaltarPalabras(line, lineIndices, categoryColors[category])}
+                            </div>
+                        );
+                    })}
+                </pre>
+            );
+        }
     };
 
     const renderPlainFileContent = (fileKey) => {
@@ -208,6 +257,23 @@ export const Highlighter = () => {
         }
     };
 
+    const handleExpanderClick = (category) => {
+        // Si el expander está actualmente abierto, lo cerramos
+        if (expandedExpander === category) {
+            setExpandedExpander(null);
+        } else {
+            // Si no, lo abrimos
+            setExpandedExpander(category);
+        }
+    };
+
+    const handleFeaturesClick = (category) => {
+        setSelectedCategory(category);
+        console.log(category)
+    }
+
+    console.log(expandedExpander)
+
     return (
         <Grid container spacing={0} margin={0} justifyContent='center' alignItems='center' minHeight='100vh' minWidth='100vw'>
             <NavBar pages={pages} />
@@ -218,9 +284,9 @@ export const Highlighter = () => {
                         variant="contained"
                         onClick={() => handleCategoryClick('nivel1')}
                         sx={{
-                            boxShadow: 'none', 
-                            backgroundColor: isNivel1 ? categoryColors[selectedCategory] : 'transparent', 
-                            textTransform: 'capitalize', 
+                            boxShadow: 'none',
+                            backgroundColor: isNivel1 ? categoryColors[selectedCategory] : 'transparent',
+                            textTransform: 'capitalize',
                             borderRadius: 4,
                             border: isNivel1 ? 0 : 1,
                             borderColor: 'secondary.main',
@@ -242,9 +308,9 @@ export const Highlighter = () => {
                         variant="contained"
                         onClick={() => handleCategoryClick('nivel2')}
                         sx={{
-                            boxShadow: 'none', 
-                            backgroundColor: isNivel2 ? categoryColors[selectedCategory] : 'transparent', 
-                            textTransform: 'capitalize', 
+                            boxShadow: 'none',
+                            backgroundColor: isNivel2 ? categoryColors[selectedCategory] : 'transparent',
+                            textTransform: 'capitalize',
                             borderRadius: 4,
                             border: isNivel2 ? 0 : 1,
                             borderColor: 'secondary.main',
@@ -266,9 +332,9 @@ export const Highlighter = () => {
                         variant="contained"
                         onClick={() => handleCategoryClick('nivel3')}
                         sx={{
-                            boxShadow: 'none', 
-                            backgroundColor: isNivel3 ? 'secondary.main' : 'transparent', 
-                            textTransform: 'capitalize', 
+                            boxShadow: 'none',
+                            backgroundColor: isNivel3 ? 'secondary.main' : 'transparent',
+                            textTransform: 'capitalize',
                             borderRadius: 4,
                             border: isNivel3 ? 0 : 1,
                             borderColor: 'secondary.main',
@@ -290,13 +356,13 @@ export const Highlighter = () => {
 
                 {isNivel3 && (
                     <Box display="flex" justifyContent="center" gap={2} marginTop={2}>
-                        {['variables', 'ciclos', 'operadores', 'funciones', 'argumentos'].map((category) => (
+                        {['arguments', 'enteros', 'floats', 'identifiers', 'loops', 'operators', 'strings'].map((category) => (
                             <Button
                                 key={category}
                                 variant="contained"
-                                onClick={() => setSelectedCategory(category)}
-                                sx={{ 
-                                    backgroundColor: categoryColors[category], 
+                                onClick={() => handleFeaturesClick(category)}
+                                sx={{
+                                    backgroundColor: categoryColors[category],
                                     textTransform: 'capitalize',
                                     '&:hover': {
                                         backgroundColor: categoryColors[category],
@@ -306,10 +372,10 @@ export const Highlighter = () => {
                                     },
                                     '&.Mui-focusVisible': {
                                         outline: 'none',
-                                    }, 
+                                    },
                                 }}
                             >
-                                {category.charAt(0).toUpperCase() + category.slice(1)}
+                                {category}
                             </Button>
                         ))}
                     </Box>
@@ -317,7 +383,7 @@ export const Highlighter = () => {
             </Grid>
 
             <Grid container spacing={2} justifyContent='center' padding={2} >
-                {[fileA, fileB].map((fileKey) => (
+                {!isNivel3 && ([fileA, fileB].map((fileKey) => (
                     <Grid item xs={12} md={6} key={fileKey}>
                         <Paper elevation={3} style={{
                             height: '70vh',
@@ -358,7 +424,63 @@ export const Highlighter = () => {
                                 : renderPlainFileContent(fileKey)}
                         </Paper>
                     </Grid>
-                ))}
+                )))}
+
+                {isNivel3 && ([fileA, fileB].map((fileKey) => (
+                    <Grid item xs={12} md={6} key={fileKey}>
+                        <Paper elevation={3} style={{
+                            height: '70vh',
+                            padding: '15px',
+                            overflow: 'auto',
+                        }}
+                            sx={{
+                                '&::-webkit-scrollbar': {
+                                    width: '8px',
+                                },
+                                '&::-webkit-scrollbar-track': {
+                                    backgroundColor: 'App.grey',
+                                },
+                                '&::-webkit-scrollbar-thumb': {
+                                    backgroundColor: "secondary.main",
+                                    borderRadius: '10px',
+                                },
+                            }}
+                        >
+                            <Box display="flex" justifyContent="center">
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        color: 'App.white',
+                                        bgcolor: 'secondary.main',
+                                        borderRadius: "22px",
+                                        px: 1,
+                                        '&:hover': {
+                                            backgroundColor: 'secondary.main'
+                                        }
+                                    }}
+                                >
+                                    {fileKey}
+                                </Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="center" flexDirection='column' marginTop='5vh'>
+                                {['main', 'functions', 'loops', 'conditionals'].map((category) => (
+                                    <Accordion key={category} expanded={expandedExpander === category} onChange={() => handleExpanderClick(category)}>
+                                        <AccordionSummary
+                                            expandIcon={<GridExpandMoreIcon />}
+                                        >
+                                            {category}
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {renderFileContent(fileKey, category)}
+                                        </AccordionDetails>
+                                    </Accordion>
+                                ))}
+                            </Box>
+                        </Paper>
+                    </Grid>
+                )))}
+
+
             </Grid>
         </Grid>
     );
