@@ -113,7 +113,120 @@ def getArguments(linesOfCode):
 			indexes = []
 	return args
 
+def getTokensFromALine(tokens, matchLine):
+	matchedTokens = []
+	for token in tokens:
+		line = token[2]
+		if line == matchLine + 1:
+			matchedTokens.append(token)
+	return matchedTokens
+
+def getFirstToken(tokens, matchLine):
+	lastToken = None
+	for token in tokens:
+		line = int(token[2])
+		if line == matchLine:
+			lastToken = token
+	return lastToken
+
+def separateCode(linesOfCode, tokens):
+	main = {"code": "", "tokens": []}
+	functions = {"code": "", "tokens": []}
+	loops = {"code": "", "tokens": []}
+	conditionals = {"code": "", "tokens": []}
+	
+	functionKeyword = "def"
+	loopKeywords = ["while", "for"]
+	conditionalKeywords = ["if", "elif", "else"]
+
+	
+	for lineIndex in range(len(linesOfCode)):
+
+		# If the current line is the start of a function then append it to the function maps
+		if linesOfCode[lineIndex].startswith(functionKeyword) and linesOfCode[lineIndex][len(functionKeyword)]:
+
+			functions["code"] += linesOfCode[lineIndex] + '\n'
+			functions["tokens"] += getTokensFromALine(tokens, lineIndex)
+			lineIndex += 1
+
+			while lineIndex < len(linesOfCode):
+				firstToken = getFirstToken(tokens, lineIndex)
+				print("fToken", firstToken)
+				if firstToken[0] == "dedent":
+					lineIndex -= 1
+					break
+				functions["code"] += linesOfCode[lineIndex] + '\n'
+				functions["tokens"] += getTokensFromALine(tokens, lineIndex)
+				lineIndex += 1
+		else:
+			# Check if the current line is the start of a loop 
+			isLoop = False
+			for key in loopKeywords:
+				if linesOfCode[lineIndex].startswith(key) and not linesOfCode[lineIndex][len(key)].isalpha():
+					isLoop = True
+
+			# Check if the current line is the start of a conditional 
+			isConditional = False
+			for key in conditionalKeywords:
+				if linesOfCode[lineIndex].startswith(key) and not linesOfCode[lineIndex][len(key)].isalpha():
+					isConditional = True
+
+			# If it's a loop then append it to the loop map
+			if isLoop:
+				loops["code"] += linesOfCode[lineIndex] + '\n'
+				loops["tokens"] += getTokensFromALine(tokens, lineIndex)
+				lineIndex += 1
+				while lineIndex < len(linesOfCode):
+					firstToken = getFirstToken(tokens, lineIndex)
+					if firstToken[0] == "dedent":
+						lineIndex -= 1
+						break
+					loops["code"] += linesOfCode[lineIndex] + '\n'
+					loops["tokens"] += getTokensFromALine(tokens, lineIndex)
+					lineIndex += 1
+			
+			# If it's a conditional, append it to the conditionals
+			elif isConditional:
+				print("isConditional")
+				conditionals["code"] += linesOfCode[lineIndex] + '\n'
+				conditionals["tokens"] += getTokensFromALine(tokens, lineIndex)
+				lineIndex += 1
+				while lineIndex < len(linesOfCode):
+					firstToken = getFirstToken(tokens, lineIndex)
+					if firstToken[0] == "dedent":
+						lineIndex -= 1
+						break
+					conditionals["code"] += linesOfCode[lineIndex] + '\n'
+					conditionals["tokens"] += getTokensFromALine(tokens, lineIndex)
+					lineIndex += 1
+			
+			else:
+				main["code"] += linesOfCode[lineIndex] + '\n'
+				main["tokens"] += getTokensFromALine(tokens, lineIndex)
+				
+				
+	return {"main": main, "functions": functions, "loops": loops, "conditionals": conditionals}
+
+
 def getSemanticValues(linesOfCode, tokens):
+	# linesOfCode = ["def hello():", "	print("Hello")"]
+	# tokens = [("reserved", 1-3, 1), ]
+
+	"""
+	num1 = 10
+	num2 = 14
+	num3 = 12
+	if (num1 >= num2) and (num1 >= num3):
+		largest = num1
+	elif (num2 >= num1) and (num2 >= num3):
+		largest = num2
+	else:
+		largest = num3
+	print("The largest number is", largest)
+	def printHola():
+		print("hola")
+   """
+		
 	return {
 		'variables': getVariables(tokens),
 		'ciclos': getLoops(tokens),
