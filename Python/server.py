@@ -157,8 +157,8 @@ def highlight():
     semanticValues2 = getSemanticValues(fileContent2.splitlines(), tokensListandLoc2)
 
     semanticPercentage = getSemanticPercentage(semanticValues1, semanticValues2)
-    comparison_results[arrNames[0]] = {"semantico": semanticValues1}, {"string": textSimilarityFile1}, {"token": {"tokens": tokenSimilarityFile1}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": 24.5, "semantico": semanticPercentage}}
-    comparison_results[arrNames[1]] = {"semantico": semanticValues2}, {"string": textSimilarityFile2}, {"token": {"tokens": tokenSimilarityFile2}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": 24.5, "semantico": semanticPercentage}}
+    comparison_results[arrNames[0]] = {"semantico": semanticValues1}, {"string": textSimilarityFile1}, {"token": {"tokens": tokenSimilarityFile1}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": similarityKind, "semantico": semanticPercentage}}
+    comparison_results[arrNames[1]] = {"semantico": semanticValues2}, {"string": textSimilarityFile2}, {"token": {"tokens": tokenSimilarityFile2}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": similarityKind, "semantico": semanticPercentage}}
     # comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
     # comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
 
