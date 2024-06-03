@@ -132,9 +132,10 @@ def getCharacteristics(tokens, linesOfCode):
 		if token == "int":
 			ints += 1
 			currentIndexes['int'].append([int(x) for x in index.split('-')])
-		elif token == "strbegin":
+		elif token == "strdata":
 			strings += 1
-			currentIndexes['string'].append([int(x) for x in index.split('-')])
+			start, end = [int(x) for x in index.split('-')]
+			currentIndexes['string'].append([start - 1, end + 1])
 		elif token == "float":
 			floats += 1
 			currentIndexes['float'].append([int(x) for x in index.split('-')])
@@ -185,12 +186,24 @@ def getCharacteristics(tokens, linesOfCode):
 
 
 def getSemanticValues(linesOfCode, tokens):
-
 	blocks = separateCode(linesOfCode, tokens)
 	for key, value in blocks.items():
 		code = value["code"]
 		block_tokens = value["tokens"]
 		characteristics = getCharacteristics(block_tokens, code)
 		blocks[key]["characteristics"] = characteristics
-	
 	return blocks	
+
+def getSemanticPercentage(semantic1, semantic2):
+	percentage = 0
+	for key, value1 in semantic1.items():
+		# Getting the characteristics of both files
+		value2 = semantic2[key]
+		charact1 = value1['characteristics']
+		charact2 = value2['characteristics']
+		# Comparing each of the characteristics to check if they have the same amount of ints, floats, etc.
+		for charactKey, charactValue1 in charact1.items():
+			charactValue2 = charact2[charactKey]
+			if charactValue1['cantidad'] == charactValue2['cantidad']:
+				percentage += (1/28)
+	return percentage * 100

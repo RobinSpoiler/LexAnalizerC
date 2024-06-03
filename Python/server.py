@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from parser import compareFilesWithTokens, compareFilesAsText, getTextSimilarityPercentage, getTokenForHighlight
 from tables import db, File
-from semanticDiff import getSemanticValues
+from semanticDiff import getSemanticValues, getSemanticPercentage
 # import io
 
 def getPlainText(file):
@@ -153,8 +153,12 @@ def highlight():
     textSimilarityFile1, textSimilarityFile2, textSimilarityPercentage = compareFilesAsText(fileContent1, fileContent2)
     tokenSimilarityFile1, tokenSimilarityFile2 = getTokenForHighlight(tokensListandLoc1, tokensListandLoc2, bloques)
 
-    comparison_results[arrNames[0]] = {"semantico": getSemanticValues(fileContent1.splitlines(), tokensListandLoc1)}, {"string": textSimilarityFile1}, {"token": {"tokens": tokenSimilarityFile1}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": 24.5, "semantico": 30}}
-    comparison_results[arrNames[1]] = {"semantico": getSemanticValues(fileContent2.splitlines(), tokensListandLoc2)}, {"string": textSimilarityFile2}, {"token": {"tokens": tokenSimilarityFile2}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": 24.5, "semantico": 30}}
+    semanticValues1 = getSemanticValues(fileContent1.splitlines(), tokensListandLoc1)
+    semanticValues2 = getSemanticValues(fileContent2.splitlines(), tokensListandLoc2)
+
+    semanticPercentage = getSemanticPercentage(semanticValues1, semanticValues2)
+    comparison_results[arrNames[0]] = {"semantico": semanticValues1}, {"string": textSimilarityFile1}, {"token": {"tokens": tokenSimilarityFile1}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": 24.5, "semantico": semanticPercentage}}
+    comparison_results[arrNames[1]] = {"semantico": semanticValues2}, {"string": textSimilarityFile2}, {"token": {"tokens": tokenSimilarityFile2}}, {"porcentajes": {"string": textSimilarityPercentage, "tokens": 24.5, "semantico": semanticPercentage}}
     # comparison_results[arrNames[0]] = {"string": textSimilarityFile1}
     # comparison_results[arrNames[1]] = {"string": textSimilarityFile2}
 
