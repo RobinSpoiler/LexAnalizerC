@@ -88,8 +88,9 @@ def getTextSimilarityIndexes(textFile1, textFile2):
 
 
 def compareFilesAsText(textFile1, textFile2):
-    similarityFile1, similarityFile2 = getTextSimilarityIndexes(textFile1, textFile2)
-    return similarityFile1, similarityFile2
+    similarityFile1, similarityFile2,  = getTextSimilarityIndexes(textFile1, textFile2)
+    similarityPercentage = getTextSimilarityPercentage(textFile1, textFile2)
+    return similarityFile1, similarityFile2, similarityPercentage
 
 def getTextSimilarityPercentage(textFile1, textFile2):
     return difflib.SequenceMatcher(None, textFile1, textFile2).ratio() * 100
