@@ -8,7 +8,6 @@ export const Highlighter = () => {
     const [comparisonRes, setComparisonRes] = useState({});
     const [fileData, setFileData] = useState({});
     const [indices, setIndices] = useState({});
-    const [showContent, setShowContent] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
     console.log(comparisonRes)
     const location = useLocation();
@@ -32,7 +31,7 @@ export const Highlighter = () => {
         texto: '#FF6347',  // Rojo-naranja-rosa ish
         tokens: '#CA53CB' //Morado
     };
-    
+
     const fetchFileData = async (fileKey) => {
         try {
             const response = await fetch(`http://127.0.0.1:5000/getFileByName?name=${fileKey}`);
@@ -173,9 +172,19 @@ export const Highlighter = () => {
         );
     };
 
+    const renderPlainFileContent = (fileKey) => {
+        const content = fileData[fileKey];
+        return (
+            <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                {content && (
+                    content
+                )}
+            </pre>
+        );
+    };
+
     const handleCategoryClick = (category) => {
         setSelectedCategory(category);
-        setShowContent(true);
     };
 
     return (
@@ -234,7 +243,9 @@ export const Highlighter = () => {
                                     {fileKey}
                                 </Typography>
                             </Box>
-                            {showContent && selectedCategory && renderFileContent(fileKey, selectedCategory)}
+                            {selectedCategory
+                                ? renderFileContent(fileKey, selectedCategory)
+                                : renderPlainFileContent(fileKey)}
                         </Paper>
                     </Grid>
                 ))}
