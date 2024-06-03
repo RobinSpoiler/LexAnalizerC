@@ -19,116 +19,17 @@ def formatInfo(lineNumber, indices):
 	return {'lineNumber': lineNumber, 'indices': indices }
 
 
-def getVariables(tokens):
-	lineNumber = 1
-	indexes = []
-	variables = []
-	for token, index, _line in tokens:
-		if token == newline:
-			if len(indexes) > 0:
-				variables.append(formatInfo(lineNumber, indexes))
-			indexes = []
-			lineNumber += 1
-		if token == identifier:
-			# Index has format "17-18"
-			start, end = [int(x) for x in index.split('-')]
-			indexes.append([start, end])
-	return variables
-			
-def getLoops(tokens):
-	lineNumber = 1
-	indexes = []
-	loops = []
-	for token, index, _line in tokens:
-		if token == newline:
-			if len(indexes) > 0:
-				loops.append(formatInfo(lineNumber, indexes))
-			indexes = []
-			lineNumber += 1
-		if token in loopsList:
-			# Index has format "17-18"
-			start, end = [int(x) for x in index.split('-')]
-			indexes.append([start, end])
-	return loops
-
-def getOperators(tokens):
-	lineNumber = 1
-	indexes = []
-	operators = []
-	for token, index, _line in tokens:
-		if token == newline:
-			if len(indexes) > 0:
-				operators.append(formatInfo(lineNumber, indexes))
-			indexes = []
-			lineNumber += 1
-		if token in operatorsList:
-			# Index has format "17-18"
-			start = int(index.split('-')[0])
-			end = start + len(token)
-			indexes.append([start, end])
-	return operators
-
-
-def getFunctions(linesOfCode):
-	# matches: "  def identifier_439"
-	functionRegex = r"^\s*def\s[a-zA-Z_][a-zA-Z0-9_]*"
-	lineNumber = 1
-	funciones = []
-	for line in linesOfCode:
-		if not line.startswith("#") and len(line) > 0:
-			match = re.search(functionRegex, line)
-			if match:
-				funciones.append(formatInfo(lineNumber, [[match.start() + 1, match.end() + 1]]))
-			lineNumber += 1
-	return funciones
-
-def getArguments(linesOfCode):
-	# matches: "  comprar_carro(30000, "Nissan", "Sentra", 2019)"
-	argRegex = r"[a-zA-Z_][a-zA-Z0-9_]*\(([a-zA-Z0-9,_\s\"\'\.]*)\)"
-	lineNumber = 1
-	args = []
-	indexes = []
-	for line in linesOfCode:
-		if not line.startswith("#") and len(line) > 0:
-			match = re.search(argRegex, line)
-			if match:
-				# Get only the arguments
-				captured_args = match.group(1)
-				# Find where the arguments start
-				index_count = match.start(1)
-				# Remove what is before the args
-				line = line[index_count:]
-				# Split arguments and remove extra spaces
-				split_args = [a.strip() for a in captured_args.split(",")]
-				# For each argument, get the starting and ending position
-				for arg in split_args:
-					start_index = line.find(arg) + index_count
-					end_index = start_index + len(arg)
-					indexes.append([start_index + 1, end_index + 1])
-					index_count = end_index
-					# Removing part of the line to avoid repetitions
-					line = line[(len(arg) + line.find(arg)):]
-				args.append(formatInfo(lineNumber, indexes))
-			lineNumber += 1
-			indexes = []
-	return args
 
 def getTokensFromALine(tokens, matchLine):
 	matchedTokens = []
 	for token in tokens:
-		line = token[2]
+		line = int(token[2])
 		if line == matchLine + 1:
 			matchedTokens.append(token)
 	return matchedTokens
 
-def getFirstToken(tokens, matchLine):
-	lastToken = None
-	for token in tokens:
-		line = int(token[2])
-		if line == matchLine:
-			lastToken = token
-	return lastToken
 
+# Separates the code into blocks, and puts the toekns into their respective blocks
 def separateCode(linesOfCode, tokens):
 	main = {"code": "", "tokens": []}
 	functions = {"code": "", "tokens": []}
@@ -139,118 +40,157 @@ def separateCode(linesOfCode, tokens):
 	loopKeywords = ["while", "for"]
 	conditionalKeywords = ["if", "elif", "else"]
 
-	
+	currentSection = "main"
 	for lineIndex in range(len(linesOfCode)):
+		currentLine = linesOfCode[lineIndex]
 
 		# If the current line is the start of a function then append it to the function maps
-		if linesOfCode[lineIndex].startswith(functionKeyword) and linesOfCode[lineIndex][len(functionKeyword)]:
+		if currentLine.startswith(functionKeyword) and not currentLine[len(functionKeyword)].isalpha():
+			currentSection = "function"
+		
+		# Check if the current line is the start of a loop 
+		for key in loopKeywords:
+			if currentLine.startswith(key) and not currentLine[len(key)].isalpha():
+				currentSection = "loop"
 
-			functions["code"] += linesOfCode[lineIndex] + '\n'
-			functions["tokens"] += getTokensFromALine(tokens, lineIndex)
-			lineIndex += 1
+		# Check if the current line is the start of a conditional 
+		for key in conditionalKeywords:
+			if currentLine.startswith(key) and not currentLine[len(key)].isalpha():
+				currentSection = "conditional"
 
-			while lineIndex < len(linesOfCode):
-				firstToken = getFirstToken(tokens, lineIndex)
-				print("fToken", firstToken)
-				if firstToken[0] == "dedent":
-					lineIndex -= 1
-					break
-				functions["code"] += linesOfCode[lineIndex] + '\n'
-				functions["tokens"] += getTokensFromALine(tokens, lineIndex)
-				lineIndex += 1
-		else:
-			# Check if the current line is the start of a loop 
-			isLoop = False
-			for key in loopKeywords:
-				if linesOfCode[lineIndex].startswith(key) and not linesOfCode[lineIndex][len(key)].isalpha():
-					isLoop = True
+		tokensOnThatLine = getTokensFromALine(tokens, lineIndex)
+		lastToken =  tokensOnThatLine[-1] if len(tokensOnThatLine) > 0 else [None]
 
-			# Check if the current line is the start of a conditional 
-			isConditional = False
-			for key in conditionalKeywords:
-				if linesOfCode[lineIndex].startswith(key) and not linesOfCode[lineIndex][len(key)].isalpha():
-					isConditional = True
+		if (currentSection == "function"):
+			functions["code"] += currentLine + '\n'
+			functions["tokens"] += tokensOnThatLine
+		elif (currentSection == "loop"):
+			loops["code"] += currentLine + '\n'
+			loops["tokens"] += tokensOnThatLine
+		elif (currentSection == "conditional"):
+			conditionals["code"] += currentLine + '\n'
+			conditionals["tokens"] += tokensOnThatLine
+		elif (currentSection == "main"):
+			main["code"] += linesOfCode[lineIndex] + '\n'
+			main["tokens"] += tokensOnThatLine
 
-			# If it's a loop then append it to the loop map
-			if isLoop:
-				loops["code"] += linesOfCode[lineIndex] + '\n'
-				loops["tokens"] += getTokensFromALine(tokens, lineIndex)
-				lineIndex += 1
-				while lineIndex < len(linesOfCode):
-					firstToken = getFirstToken(tokens, lineIndex)
-					if firstToken[0] == "dedent":
-						lineIndex -= 1
-						break
-					loops["code"] += linesOfCode[lineIndex] + '\n'
-					loops["tokens"] += getTokensFromALine(tokens, lineIndex)
-					lineIndex += 1
-			
-			# If it's a conditional, append it to the conditionals
-			elif isConditional:
-				print("isConditional")
-				conditionals["code"] += linesOfCode[lineIndex] + '\n'
-				conditionals["tokens"] += getTokensFromALine(tokens, lineIndex)
-				lineIndex += 1
-				while lineIndex < len(linesOfCode):
-					firstToken = getFirstToken(tokens, lineIndex)
-					if firstToken[0] == "dedent":
-						lineIndex -= 1
-						break
-					conditionals["code"] += linesOfCode[lineIndex] + '\n'
-					conditionals["tokens"] += getTokensFromALine(tokens, lineIndex)
-					lineIndex += 1
-			
-			else:
-				main["code"] += linesOfCode[lineIndex] + '\n'
-				main["tokens"] += getTokensFromALine(tokens, lineIndex)
-				
-				
+		if lastToken[0] == "dedent":
+			currentSection = "main"
+		
 	return {"main": main, "functions": functions, "loops": loops, "conditionals": conditionals}
 
 
-def getSemanticValues(linesOfCode, tokens):
-	# linesOfCode = ["def hello():", "	print("Hello")"]
-	# tokens = [("reserved", 1-3, 1), ]
+def getCharacteristics(tokens, linesOfCode):
+	# Requires tokens
+	ints = 0
+	intsIndexes = []
+	strings = 0
+	stringIndexes = []
+	floats = 0
+	floatsIndexes = []
+	identifiers = 0
+	identifiersIndexes = []
+	loops = 0
+	loopsIndexes = []
+	operators = 0
+	operatorsIndexes = []
+	# Requires linesOfCode
+	arguments = 0
+	argumentsIndexes = []
 
-	"""
-	num1 = 10
-	num2 = 14
-	num3 = 12
-	if (num1 >= num2) and (num1 >= num3):
-		largest = num1
-	elif (num2 >= num1) and (num2 >= num3):
-		largest = num2
-	else:
-		largest = num3
-	print("The largest number is", largest)
-	def printHola():
-		print("hola")
-   """
-		
+	# =============== Get all semantic values from tokens
+	prevLine = '0'
+	currentLine = 0
+	indexesKeys = ["int", 'float', 'string', 'ident', 'loops', 'operators', 'arguments']
+	currentIndexes = {}
+	for key in indexesKeys:
+		currentIndexes[key] = []
+	for token, index, line in tokens:
+		# Since the line has changed, we must add the pre-existing values
+		if prevLine != line:
+			for key, value in currentIndexes.items():
+				if len(value) > 0:
+					formattedInfo = formatInfo(currentLine, value)
+					if key == "int":
+						intsIndexes.append(formattedInfo)
+					elif key == "float":
+						floatsIndexes.append(formattedInfo)
+					elif key == "string":
+						stringIndexes.append(formattedInfo)
+					elif key == "ident":
+						identifiersIndexes.append(formattedInfo)
+					elif key == "loops":
+						loopsIndexes.append(formattedInfo)
+					elif key == "operators":
+						operatorsIndexes.append(formattedInfo)
+					# Restart that index
+					currentIndexes[key] = []
+			currentLine += 1
+			prevLine = line
+
+		# tokenIndex = 
+		if token == "int":
+			ints += 1
+			currentIndexes['int'].append([int(x) for x in index.split('-')])
+		elif token == "strbegin":
+			strings += 1
+			currentIndexes['string'].append([int(x) for x in index.split('-')])
+		elif token == "float":
+			floats += 1
+			currentIndexes['float'].append([int(x) for x in index.split('-')])
+		elif token == "ident":
+			identifiers += 1
+			currentIndexes['ident'].append([int(x) for x in index.split('-')])
+		elif token in loopsList:
+			loops += 1
+			currentIndexes['loops'].append([int(x) for x in index.split('-')])
+		elif token in operatorsList:
+			operators += 1
+			currentIndexes['operators'].append([int(x) for x in index.split('-')])
+	# Add last line of indexes
+	for key, value in currentIndexes.items():
+		if len(value) > 0:
+			formattedInfo = formatInfo(currentLine, value)
+			if key == "int":
+				intsIndexes.append(formattedInfo)
+			elif key == "float":
+				floatsIndexes.append(formattedInfo)
+			elif key == "string":
+				stringIndexes.append(formattedInfo)
+			elif key == "ident":
+				identifiersIndexes.append(formattedInfo)
+			elif key == "loops":
+				loopsIndexes.append(formattedInfo)
+			elif key == "operators":
+				operatorsIndexes.append(formattedInfo)
+
+	# =========== Get the arguments from linesOfCode
+	argumentsRegex = r"[a-zA-Z_][a-zA-Z0-9_]*\(([a-zA-Z0-9,_\s\"\'\.]*)\)"
+
+	for line in linesOfCode:
+		match = re.search(argumentsRegex, line)
+		if match:
+			captured_args = match.group(1)
+			split_args = [a.strip() for a in captured_args.split(",")]
+			arguments += len(split_args)
 	return {
-		'variables': getVariables(tokens),
-		'ciclos': getLoops(tokens),
-		'operadores': getOperators(tokens),
-		'funciones': getFunctions(linesOfCode),
-		'argumentos': getArguments(linesOfCode)
+		"enteros": {"cantidad": ints, "location": intsIndexes},
+		"strings": {"cantidad": strings, "location": stringIndexes},
+		"floats": {"cantidad": floats, "location": floatsIndexes},
+		"identifiers": {"cantidad": identifiers, "location": identifiersIndexes},
+		"loops": {"cantidad": loops, "location": loopsIndexes},
+		"operators": {"cantidad": operators, "location": operatorsIndexes},
+		"arguments": {"cantidad": arguments, "location": argumentsIndexes},
 	}
 
-"""
-{
-	variables: [
-		{ lineNumber: int (desde 1), indices: [[int, int] ... }
-	]
-	ciclos: [
-		{ lineNumber: int (desde 1), indices: [[int, int] ... }
-	]
-	operadores: [
-		{ lineNumber: int (desde 1), indices: [[int, int] ... }
-	]
-	funciones: [
-		{ lineNumber: int (desde 1), indices: [[int, int] ... }
-	]
-	argumentos: [
-		{ lineNumber: int (desde 1), indices: [[int, int] ... }
-	]
-}
-"""
+
+def getSemanticValues(linesOfCode, tokens):
+
+	blocks = separateCode(linesOfCode, tokens)
+	for key, value in blocks.items():
+		code = value["code"]
+		block_tokens = value["tokens"]
+		characteristics = getCharacteristics(block_tokens, code)
+		blocks[key]["characteristics"] = characteristics
+	
+	return blocks	
