@@ -9,6 +9,7 @@ export const Highlighter = () => {
     const [comparisonRes, setComparisonRes] = useState({});
     const [fileData, setFileData] = useState({});
     const [indices, setIndices] = useState({});
+    const [nCategory, setNCategory] = useState({});
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isNivel1, setIsNivel1] = useState(false);
     const [isNivel2, setIsNivel2] = useState(false);
@@ -86,6 +87,7 @@ export const Highlighter = () => {
             if (comparisonRes && comparisonRes[fileKey]) {
                 const fileData = comparisonRes[fileKey];
                 const newIndices = {};
+                const categoryQuantity = {};
 
                 fileData.forEach(data => {
                     if (data.semantico) {
@@ -93,15 +95,21 @@ export const Highlighter = () => {
                             if (!newIndices[category]) {
                                 newIndices[category] = [];
                             }
-
+                            if (!categoryQuantity[category]) {
+                                categoryQuantity[category] = [];
+                            }
                             const categoryData = data.semantico[category].characteristics;
-                            // console.log(data.semantico[category])
                             if (categoryData) {
                                 // Itera sobre las características de la categoría
                                 Object.keys(categoryData).forEach(characteristic => {
                                     const characteristicData = categoryData[characteristic];
                                     // Verifica si la característica tiene una ubicación definida
-                                    if (characteristicData && characteristicData.location && characteristicData.cantidad) {
+                                    if (characteristicData && characteristicData.location && characteristicData.location) {
+
+                                        categoryQuantity[category].push({
+                                            category: characteristic,
+                                            cantidad: characteristicData.cantidad
+                                        })
                                         // Accede a los índices dentro de la propiedad location
                                         characteristicData.location.forEach(location => {
                                             // Guarda los índices y el número de línea en newIndices
@@ -111,6 +119,12 @@ export const Highlighter = () => {
                                                 lineNumber: location.lineNumber,
                                             });
                                         });
+                                    }
+                                    else if (characteristicData && characteristicData.cantidad) {
+                                        categoryQuantity[category].push({
+                                            category: characteristic,
+                                            cantidad: characteristicData.cantidad
+                                        })
                                     }
                                 });
                             }
@@ -137,14 +151,13 @@ export const Highlighter = () => {
                 });
 
                 setIndices(prev => ({ ...prev, [fileKey]: newIndices }));
+                setNCategory(prev => ({ ...prev, [fileKey]: categoryQuantity }));
             }
         };
 
         updateIndices(fileA);
         updateIndices(fileB);
     }, [comparisonRes, fileA, fileB]);
-
-    console.log(indices)
 
     const resaltarPalabras = (linea, indices, color) => {
         const palabras = linea.split('');
@@ -184,7 +197,6 @@ export const Highlighter = () => {
 
     const renderFileContent = (fileKey, category) => {
         if (isNivel3) {
-            console.log("categoria", category)
             const size = indices[fileKey][category].length;
             const content = indices[fileKey][category][size - 1];
             const fileIndices = indices[fileKey] ? indices[fileKey][category] || [] : [];
@@ -269,10 +281,7 @@ export const Highlighter = () => {
 
     const handleFeaturesClick = (category) => {
         setSelectedCategory(category);
-        console.log(category)
     }
-
-    console.log(expandedExpander)
 
     return (
         <Grid container spacing={0} margin={0} justifyContent='center' alignItems='center' minHeight='100vh' minWidth='100vw'>
@@ -467,10 +476,22 @@ export const Highlighter = () => {
                                     <Accordion key={category} expanded={expandedExpander === category} onChange={() => handleExpanderClick(category)}>
                                         <AccordionSummary
                                             expandIcon={<GridExpandMoreIcon />}
+                                            sx={{ textTransform: 'capitalize', fontWeight: 'bold', color: 'primary.main' }}
                                         >
                                             {category}
                                         </AccordionSummary>
                                         <AccordionDetails>
+                                            <Box display="flex" justifyContent="space-between">
+                                                {['arguments', 'enteros', 'floats', 'identifiers', 'loops', 'operators', 'strings'].map(subCategory => {
+                                                    const cantidad = nCategory ? nCategory[fileKey][category].find(item => item.category == subCategory).cantidad : '';
+                                                    return (
+                                                        <Typography key={subCategory} sx={{color: categoryColors[subCategory]}}>
+                                                            {subCategory}: {cantidad}
+                                                        </Typography>
+                                                    );
+                                                })}
+                                            </Box>
+
                                             {renderFileContent(fileKey, category)}
                                         </AccordionDetails>
                                     </Accordion>
