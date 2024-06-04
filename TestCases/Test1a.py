@@ -1,11 +1,19 @@
-def es_palindromo(cadena):
-    cadena = cadena.replace(" ", "").lower()
-    return cadena == cadena[::-1]
-def main():
-    frase = input("Introduce una frase: ")
-    if es_palindromo(frase):
-        print(f"'{frase}' es un palíndromo")
+def tipo_triangulo(lado1, lado2, lado3):
+    if lado1 == lado2:
+        if lado2 == lado3:
+            return "Equilátero"
+        else:
+            return "Isósceles"
+    elif lado1 == lado3 or lado2 == lado3:
+        return "Isósceles"
     else:
-        print(f"'{frase}' no es un palíndromo")
+        return "Escaleno"
 if __name__ == "__main__":
-    main()
+    triangulos = [
+        (3, 3, 3),
+        (4, 4, 5),
+        (3, 4, 5)
+    ]
+    for lados in triangulos:
+        tipo = tipo_triangulo(*lados)
+        print(f"El triángulo con lados {lados} es {tipo}")
