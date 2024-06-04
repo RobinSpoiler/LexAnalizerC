@@ -41,6 +41,7 @@ def separateCode(linesOfCode, tokens):
 	conditionalKeywords = ["if", "elif", "else"]
 
 	currentSection = "main"
+	indents = 0
 	for lineIndex in range(len(linesOfCode)):
 		currentLine = linesOfCode[lineIndex]
 
@@ -74,8 +75,12 @@ def separateCode(linesOfCode, tokens):
 			main["code"] += linesOfCode[lineIndex] + '\n'
 			main["tokens"] += tokensOnThatLine
 
+		if lastToken[0] == "indent":
+			indents += 1
 		if lastToken[0] == "dedent":
-			currentSection = "main"
+			indents -= 1
+			if indents == 0:
+				currentSection = "main"
 		
 	return {"main": main, "functions": functions, "loops": loops, "conditionals": conditionals}
 
