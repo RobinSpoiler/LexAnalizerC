@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { NavBar } from '../Components';
+import { CircularProgressBar, NavBar } from '../Components';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { GridExpandMoreIcon } from '@mui/x-data-grid';
@@ -10,10 +10,14 @@ export const Highlighter = () => {
     const [fileData, setFileData] = useState({});
     const [indices, setIndices] = useState({});
     const [nCategory, setNCategory] = useState({});
+    const [percentages, setPercentages] = useState({});
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isNivel1, setIsNivel1] = useState(false);
     const [isNivel2, setIsNivel2] = useState(false);
     const [isNivel3, setIsNivel3] = useState(false);
+    const [selectedNivel, setSelectedNivel] = useState('');
+    const [selectedPercentage, setSelectedPercentage] = useState('');
+
     const [expandedExpander, setExpandedExpander] = useState('main');
 
     const location = useLocation();
@@ -27,6 +31,12 @@ export const Highlighter = () => {
         { name: 'Descripción general', route: '/overview' },
         { name: 'Comparador', route: '/highlighter' },
     ];
+
+    const descriptions = [
+        { nivel1: 'La comparación de textos por caracteres es un método que analiza dos cadenas de texto comparando cada carácter en ambas posiciones correspondientes.' },
+        { nivel2: 'La comparación por tokens es un método que analiza dos cadenas de texto dividiéndolas en unidades significativas llamadas tokens, que pueden ser palabras, frases, u otros elementos sintácticos. Este método permite detectar cambios más semánticos, como la adición, eliminación o modificación de palabras completas.' },
+        { nivel3: 'La descomposición del código en sus estructuras más simples (main, funciones, ciclos y condicionales), permite al evaluador enfocarse en estructuras específicas, siendo que se puede analizar los argumentos, enteros, flotantes, identificadores, ciclos, operadores y cadenas que componen a dicha porción de código.' },
+    ]
 
     const categoryColors = {
         arguments: '#4AB7A3',
@@ -81,6 +91,11 @@ export const Highlighter = () => {
         }
     }, [fileData]);
 
+    useEffect(() => {
+        if (comparisonRes && fileA && comparisonRes[fileA]) {
+            setPercentages(comparisonRes[fileA][3].porcentajes)
+        }
+    }, [comparisonRes, fileA])
 
     useEffect(() => {
         const updateIndices = (fileKey) => {
@@ -88,6 +103,7 @@ export const Highlighter = () => {
                 const fileData = comparisonRes[fileKey];
                 const newIndices = {};
                 const categoryQuantity = {};
+                const porcentajes = {}
 
                 fileData.forEach(data => {
                     if (data.semantico) {
@@ -250,6 +266,8 @@ export const Highlighter = () => {
     const handleCategoryClick = (category) => {
         if (category === 'nivel3') {
             setSelectedCategory('nivel3');
+            setSelectedNivel('nivel3');
+            setSelectedPercentage('semantico');
             setIsNivel3(true);
             setIsNivel2(false);
             setIsNivel1(false);
@@ -257,12 +275,16 @@ export const Highlighter = () => {
         }
         if (category === 'nivel2') {
             setSelectedCategory('tokens');
+            setSelectedNivel('nivel2');
+            setSelectedPercentage('tokens');
             setIsNivel3(false);
             setIsNivel2(true);
             setIsNivel1(false);
         }
         if (category === 'nivel1') {
             setSelectedCategory('texto');
+            setSelectedNivel('nivel1');
+            setSelectedPercentage('string');
             setIsNivel3(false);
             setIsNivel2(false);
             setIsNivel1(true);
@@ -270,11 +292,9 @@ export const Highlighter = () => {
     };
 
     const handleExpanderClick = (category) => {
-        // Si el expander está actualmente abierto, lo cerramos
         if (expandedExpander === category) {
             setExpandedExpander(null);
         } else {
-            // Si no, lo abrimos
             setExpandedExpander(category);
         }
     };
@@ -283,11 +303,22 @@ export const Highlighter = () => {
         setSelectedCategory(category);
     }
 
+    const getDescriptionByKey = (key) => {
+        const descriptionObject = descriptions.find(desc => desc[key]);
+        return descriptionObject ? descriptionObject[key] : '';
+    };
+
     return (
         <Grid container spacing={0} margin={0} justifyContent='center' alignItems='center' minHeight='100vh' minWidth='100vw'>
             <NavBar pages={pages} />
 
-            <Grid item xs={12} marginTop='15vh' align='center'>
+            {selectedPercentage && (
+                <Grid item xs={12} align='right' px={5} marginTop='12vh'>
+                    <CircularProgressBar percentage={percentages[selectedPercentage].toFixed(2)} />
+                </Grid>
+            )}
+
+            <Grid item xs={12} align='center' marginTop={selectedNivel ? '0vh' : '15vh'}>
                 <Box display="flex" justifyContent="center" gap={2}>
                     <Button
                         variant="contained"
@@ -361,6 +392,7 @@ export const Highlighter = () => {
                     >
                         Nivel 3
                     </Button>
+
                 </Box>
 
                 {isNivel3 && (
@@ -371,13 +403,21 @@ export const Highlighter = () => {
                                 variant="contained"
                                 onClick={() => handleFeaturesClick(category)}
                                 sx={{
-                                    backgroundColor: categoryColors[category],
+                                    backgroundColor: 'transparent',
+                                    boxShadow: 'none',
+                                    color: 'App.black',
+                                    border:  1,
+                                    borderColor: categoryColors[category],
                                     textTransform: 'capitalize',
                                     '&:hover': {
                                         backgroundColor: categoryColors[category],
+                                        color : 'App.white',
+                                        borderColor: categoryColors[category],
                                     },
                                     '&:focus': {
                                         outline: 'none',
+                                        backgroundColor: categoryColors[category],
+                                        color : 'App.white'
                                     },
                                     '&.Mui-focusVisible': {
                                         outline: 'none',
@@ -389,13 +429,21 @@ export const Highlighter = () => {
                         ))}
                     </Box>
                 )}
+
+                {selectedNivel && (
+                    <Box display="flex" gap={2} marginTop={2} px={3}>
+                        <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>Descripción.</Typography>
+                        <Typography sx={{ color: 'App.black', textAlign: 'justify' }}>{getDescriptionByKey(selectedNivel)}</Typography>
+                    </Box>
+                )}
+
             </Grid>
 
-            <Grid container spacing={2} justifyContent='center' padding={2} >
+            <Grid container spacing={2} justifyContent='center' padding={3} >
                 {!isNivel3 && ([fileA, fileB].map((fileKey) => (
                     <Grid item xs={12} md={6} key={fileKey}>
                         <Paper elevation={3} style={{
-                            height: '70vh',
+                            height: selectedNivel ? '60vh' : '70vh',
                             padding: '15px',
                             overflow: 'auto',
                         }}
@@ -473,7 +521,8 @@ export const Highlighter = () => {
                             </Box>
                             <Box display="flex" justifyContent="center" flexDirection='column' marginTop='5vh'>
                                 {['main', 'functions', 'loops', 'conditionals'].map((category) => (
-                                    <Accordion key={category} expanded={expandedExpander === category} onChange={() => handleExpanderClick(category)}>
+
+                                    <Accordion key={category} expanded={expandedExpander === category} onChange={() => handleExpanderClick(category)} disabled={indices && !indices[fileKey][category][indices[fileKey][category].length - 1]}>
                                         <AccordionSummary
                                             expandIcon={<GridExpandMoreIcon />}
                                             sx={{ textTransform: 'capitalize', fontWeight: 'bold', color: 'primary.main' }}
@@ -485,7 +534,7 @@ export const Highlighter = () => {
                                                 {['arguments', 'enteros', 'floats', 'identifiers', 'loops', 'operators', 'strings'].map(subCategory => {
                                                     const cantidad = nCategory ? nCategory[fileKey][category].find(item => item.category == subCategory).cantidad : '';
                                                     return (
-                                                        <Typography key={subCategory} sx={{color: categoryColors[subCategory]}}>
+                                                        <Typography key={subCategory} sx={{ color: categoryColors[subCategory] }}>
                                                             {subCategory}: {cantidad}
                                                         </Typography>
                                                     );
@@ -500,8 +549,6 @@ export const Highlighter = () => {
                         </Paper>
                     </Grid>
                 )))}
-
-
             </Grid>
         </Grid>
     );
