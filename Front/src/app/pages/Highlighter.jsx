@@ -574,7 +574,6 @@ export const Highlighter = () => {
                     </Grid>
                 )))}
             </Grid>
-
         </Grid>
     );
 };

@@ -16,7 +16,6 @@ export const Overview = () => {
     useEffect(() => {
         setAllFiles(handleGetFiles())
     }, [])
-
     
     useEffect(() => {
         handleCompare()
@@ -27,7 +26,6 @@ export const Overview = () => {
         { name: 'Subir archivos', route: '/upload' },
         { name: 'Descripción general', route: '/overview' },
     ];
-
 
     let lendefila =  Object.keys(allfiles).length + 1
     let lenMatriz =  lendefila * lendefila
@@ -44,8 +42,6 @@ export const Overview = () => {
 
     const porcentajes = Object.values(matrixData).map(item => item.porcentaje);
 
-    // console.log(matriz)
-    // console.log("porcentajes",porcentajes)
     let cont = 0
     for(let i = 0; i < matriz.length; i++){
         if(matriz[i] == 1){
@@ -64,18 +60,12 @@ export const Overview = () => {
                 method: 'GET',
             });
 
-            // console.log(response)
             if (!response.ok) {
                 throw new Error('Error al subir archivos');
             }
 
             const res = await response.json();
             setAllFiles(res);
-
-            // console.log("handleGetFiles", allfiles)
-
-
-            console.log('Archivos subidos exitosamente');
         } catch (error) {
             console.error('Error:', error.message);
         }
@@ -94,7 +84,6 @@ export const Overview = () => {
 
             const res = await response.json();
             setLoadedImg(true);
-            console.log('getImages subidos exitosamente');
         } catch (error) {
             console.error('Error:', error.message);
         }
@@ -162,7 +151,6 @@ export const Overview = () => {
             ))}
         </>
     );
-
 
     return (
         <Box sx={{ width: '100%', position: 'relative' }}>

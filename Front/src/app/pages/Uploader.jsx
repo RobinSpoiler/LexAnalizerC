@@ -28,14 +28,11 @@ export const Uploader = () => {
             if (!response.ok) {
                 throw new Error('Error al subir archivos');
             }
-
-            console.log('Archivos subidos exitosamente');
             setUploading(true);
         } catch (error) {
             console.error('Error:', error.message);
         }
     };
-
 
     const handleProgressComplete = () => {
         navigate("/overview")
