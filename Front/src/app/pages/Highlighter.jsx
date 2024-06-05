@@ -555,7 +555,7 @@ export const Highlighter = () => {
                                         </AccordionDetails>
                                     </Accordion>
                                 ))}
-                                <Accordion key={fileKey}>
+                                <Accordion key='graph' expanded={expandedExpander === 'graph'} onChange={() => handleExpanderClick('graph')}>
                                     <AccordionSummary
                                         expandIcon={<GridExpandMoreIcon />}
                                         sx={{ textTransform: 'capitalize', fontWeight: 'bold', color: 'primary.main' }}

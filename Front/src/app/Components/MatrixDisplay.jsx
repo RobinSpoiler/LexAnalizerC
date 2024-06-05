@@ -34,7 +34,7 @@ export const MatrixDisplay = ({ matrix }) => {
             // Find the file names in the current row and column
             const rowFiles = rows[rowIndex].filter(item => typeof item === 'string' && item.includes('.py'));
             const colFiles = rows.map(row => row[colIndex]).filter(item => typeof item === 'string' && item.includes('.py'));
-            const file_names = [rowFiles, colFiles]
+            const file_names = [...rowFiles, ...colFiles]
             navigate('/highlighter', { state: { file_names } });
         }
     };
