@@ -11,9 +11,6 @@ def solicitar_numero():
             return int(num_str)
         else:
             print("Entrada no válida. Intenta de nuevo.")
-def main():
-    numero = solicitar_numero()
-    resultado = calcular_suma_digitos(numero)
-    print(f"La suma de los dígitos de {numero} es {resultado}")
-if __name__ == "__main__":
-    main()
+numero = solicitar_numero()
+resultado = calcular_suma_digitos(numero)
+print(f"La suma de los dígitos de {numero} es {resultado}")

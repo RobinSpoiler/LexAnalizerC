@@ -7,10 +7,9 @@ def crear_secuencia_fibonacci(n):
 def imprimir_secuencia(fib):
     for index, number in enumerate(fib):
         print(f"Índice {index}: {number}")
-if __name__ == "__main__":
-    n = int(input("Ingrese el número de elementos de Fibonacci: "))
-    if n < 2:
-        print("El valor debe ser 2 o más")
-    else:
-        secuencia_fib = crear_secuencia_fibonacci(n)
-        imprimir_secuencia(secuencia_fib)
+n = int(input("Ingrese el número de elementos de Fibonacci: "))
+if n < 2:
+    print("El valor debe ser 2 o más")
+else:
+    secuencia_fib = crear_secuencia_fibonacci(n)
+    imprimir_secuencia(secuencia_fib)

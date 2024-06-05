@@ -5,15 +5,9 @@ def verificar_primo(n):
         if n % divisor == 0:
             return False
     return True
-def generar_primos_hasta(n):
-    lista_primos = []
-    for numero in range(2, n + 1):
-        if verificar_primo(numero):
-            lista_primos.append(numero)
-    return lista_primos
-def main():
-    n = int(input("Escribe un número: "))
-    primos = generar_primos_hasta(n)
-    print(f"Lista de números primos hasta {n}: {primos}")
-if __name__ == "__main__":
-    main()
+n = int(input("Escribe un número: "))
+lista_primos = []
+for numero in range(2, n + 1):
+    if verificar_primo(numero):
+        lista_primos.append(numero)
+print(f"Lista de números primos hasta {n}: {lista_primos}")

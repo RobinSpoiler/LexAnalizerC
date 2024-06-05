@@ -7,10 +7,9 @@ def burbuja_ordenar(lista):
 def imprimir_lista(lista):
     for i, valor in enumerate(lista):
         print(f"Elemento {i}: {valor}")
-if __name__ == "__main__":
-    lista = [int(x) for x in input("Introduce números separados por espacios: ").split()]
-    print("Lista original:")
-    imprimir_lista(lista)
-    burbuja_ordenar(lista)
-    print("Lista ordenada:")
-    imprimir_lista(lista)
+lista = [int(x) for x in input("Introduce números separados por espacios: ").split()]
+print("Lista original:")
+imprimir_lista(lista)
+burbuja_ordenar(lista)
+print("Lista ordenada:")
+imprimir_lista(lista)

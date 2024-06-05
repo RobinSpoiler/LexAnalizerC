@@ -7,10 +7,9 @@ def bubble_sort(lista):
 def print_list(lista):
     for idx, num in enumerate(lista):
         print(f"Elemento en índice {idx}: {num}")
-if __name__ == "__main__":
-    lista = [int(x) for x in input("Escriba números separados por espacios: ").split()]
-    print("Lista antes de ordenar:")
-    print_list(lista)
-    bubble_sort(lista)
-    print("Lista después de ordenar:")
-    print_list(lista)
+lista = [int(x) for x in input("Escriba números separados por espacios: ").split()]
+print("Lista antes de ordenar:")
+print_list(lista)
+bubble_sort(lista)
+print("Lista después de ordenar:")
+print_list(lista)

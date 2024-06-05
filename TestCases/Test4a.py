@@ -6,10 +6,9 @@ def generar_fibonacci(n):
 def imprimir_fibonacci(fibonacci):
     for i, num in enumerate(fibonacci):
         print(f"Fibonacci[{i}]: {num}")
-if __name__ == "__main__":
-    n = int(input("Introduce el número de términos de la secuencia de Fibonacci: "))
-    if n < 2:
-        print("El número debe ser mayor o igual a 2")
-    else:
-        fibonacci = generar_fibonacci(n)
-        imprimir_fibonacci(fibonacci)
+n = int(input("Introduce el número de términos de la secuencia de Fibonacci: "))
+if n < 2:
+    print("El número debe ser mayor o igual a 2")
+else:
+    fibonacci = generar_fibonacci(n)
+    imprimir_fibonacci(fibonacci)

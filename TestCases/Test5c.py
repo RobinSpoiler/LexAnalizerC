@@ -10,9 +10,6 @@ def obtener_numero():
         print("Entrada inválida. Por favor ingrese un número positivo.")
         numero = input("Ingrese un número positivo: ")
     return int(numero)
-def main():
-    numero = obtener_numero()
-    suma = suma_digitos(numero)
-    print(f"La suma de los dígitos del número {numero} es: {suma}")
-if __name__ == "__main__":
-    main()
+numero = obtener_numero()
+suma = suma_digitos(numero)
+print(f"La suma de los dígitos del número {numero} es: {suma}")

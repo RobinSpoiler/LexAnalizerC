@@ -15,12 +15,9 @@ def leer_numeros():
         except ValueError:
             print(f"'{num_str}' no es un número válido y será ignorado.")
     return lista
-def main():
-    numeros = leer_numeros()
-    if numeros:
-        maximo = max_en_lista(numeros)
-        print(f"El valor máximo en la lista es: {maximo}")
-    else:
-        print("La lista proporcionada está vacía o no contiene números válidos.")
-if __name__ == "__main__":
-    main()
+numeros = leer_numeros()
+if numeros:
+    maximo = max_en_lista(numeros)
+    print(f"El valor máximo en la lista es: {maximo}")
+else:
+    print("La lista proporcionada está vacía o no contiene números válidos.")

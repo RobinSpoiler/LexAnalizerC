@@ -14,12 +14,9 @@ def pedir_lista():
             return lista
         except ValueError:
             print("Entrada no válida. Asegúrate de introducir solo números separados por espacios.")
-def main():
-    lista = pedir_lista()
-    if lista:
-        maximo = obtener_maximo(lista)
-        print(f"El número mayor en la lista es: {maximo}")
-    else:
-        print("No se introdujeron números válidos.")
-if __name__ == "__main__":
-    main()
+lista = pedir_lista()
+if lista:
+    maximo = obtener_maximo(lista)
+    print(f"El número mayor en la lista es: {maximo}")
+else:
+    print("No se introdujeron números válidos.")
