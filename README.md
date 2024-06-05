@@ -1,38 +1,19 @@
-# AnLexC
-Analizador léxico para C 
+# React + Vite
 
+## Dependencies
 
-To run:
+- yarn add react-router-dom
+- yarn add @emotion/react
+- yarn add @mui/material
+- yarn add axios
+- yarn add @emotion/styled
+- yarn add @mui/x-data-grid
+- pip install pydot
+- pip install graphviz
 
-### Correr lex lexer
-
-1. Compilar el archivo .l que contiene las reglas establecidas
-   
-   - lex lexer.l
-
-2. Compilar el archivo .c generado por el lexer. Ocupar el compilador de agrado que acepte C.
-   Nota. El parámetro -ll indica al compilador que enlace con la biblioteca de Lex.
-
-   - gcc lex.yy.c -o lexer -ll
-   - clang lex.yy.c -o lexer -ll
-
-3. Ejecutar el archivo lexer para testearlo
-
-   - ./lexer
-
-### Para leer un file e identificar el léxico
-
-1. Compilar el archivo .l que contiene las reglas establecidas
-
-   - lex lexer.l
-
-2. Compilar el archivo main.c que contine la lógica para usar el lexer con un archivo prueba. Ocupar el compilador de agrado que acepte C.
-
-   - gcc main.c -o analizador_lexico -ll
-   - clang main.c -o analizador_lexico -ll
-
-3. Ejecutar el archivo lexer seguido del archivo prueba
-
-   - ./analizador_lexico <archivo.c>
-
-
+## Manual para correr la aplicación
+1. En la terminal, ir a la carpeta Python
+2. Correr el comando python server.py
+3. En otra ventana de la termina, ir a la carpeta Front
+4. Correr el comando yarn dev
+5. En el navegador, pegar la URL que se muestra despues de "Local"
