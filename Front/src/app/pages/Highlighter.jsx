@@ -64,10 +64,12 @@ export const Highlighter = () => {
         }
     };
 
+
     useEffect(() => {
         fetchFileData(fileA);
         fetchFileData(fileB);
     }, []);
+
 
     const handleHighlights = async () => {
         try {
