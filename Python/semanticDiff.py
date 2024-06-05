@@ -227,5 +227,5 @@ def getSemanticPercentage(semantic1, semantic2):
 		if counterWithZeros == 7:
 			percentage += (7/28)
 		else:
-			percentage += counterNoZeros
+			percentage += (counterNoZeros/28)
 	return percentage * 100
