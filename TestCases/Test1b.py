@@ -1,9 +1,16 @@
-def verificar_palindromo(texto):
-    texto = texto.replace(" ", "").lower()
-    invertido = texto[::-1]
-    return texto == invertido
-entrada = input("Escribe una frase: ")
-if verificar_palindromo(entrada):
-    print(f"La frase '{entrada}' es un palíndromo")
-else:
-    print(f"La frase '{entrada}' no es un palíndromo")
+def determinar_tipo_triangulo(a, b, c):
+    lados = {a, b, c}
+    if len(lados) == 1:
+        return "Equilátero"
+    elif len(lados) == 2:
+        return "Isósceles"
+    else:
+        return "Escaleno"
+ejemplos = [
+    (5, 5, 5),
+    (6, 6, 10),
+    (8, 7, 6)
+]
+for a, b, c in ejemplos:
+    tipo = determinar_tipo_triangulo(a, b, c)
+    print(f"Triángulo con lados {a}, {b}, {c} es {tipo}")

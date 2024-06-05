@@ -1,9 +1,17 @@
-def es_palabra_palindromo(palabra):
-    palabra = palabra.replace(" ", "").lower()
-    reverso = palabra[::-1]
-    return palabra == reverso
-palabra = input("Introduce una palabra o frase: ")
-if es_palabra_palindromo(palabra):
-    print(f"'{palabra}' es un palíndromo")
-else:
-    print(f"'{palabra}' no es un palíndromo")
+def clasificar_triangulo(l1, l2, l3):
+    lados = [l1, l2, l3]
+    conteo = {lado: lados.count(lado) for lado in lados}
+    if 3 in conteo.values():
+        return "Equilátero"
+    elif 2 in conteo.values():
+        return "Isósceles"
+    else:
+        return "Escaleno"
+conjuntos_de_lados = [
+    (2, 2, 2),
+    (7, 7, 10),
+    (3, 4, 6)
+]
+for l1, l2, l3 in conjuntos_de_lados:
+    tipo = clasificar_triangulo(l1, l2, l3)
+    print(f"Triángulo con lados {l1}, {l2}, {l3} es {tipo}")
