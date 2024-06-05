@@ -1,3 +1,8 @@
+triangulos = [
+    (3, 3, 3),
+    (4, 4, 5),
+    (3, 4, 5)
+]
 def tipo_triangulo(lado1, lado2, lado3):
     if lado1 == lado2:
         if lado2 == lado3:
@@ -8,11 +13,6 @@ def tipo_triangulo(lado1, lado2, lado3):
         return "Isósceles"
     else:
         return "Escaleno"
-triangulos = [
-    (3, 3, 3),
-    (4, 4, 5),
-    (3, 4, 5)
-]
 for lados in triangulos:
     tipo = tipo_triangulo(*lados)
     print(f"El triángulo con lados {lados} es {tipo}")

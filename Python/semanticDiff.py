@@ -48,16 +48,21 @@ def separateCode(linesOfCode, tokens):
 		# If the current line is the start of a function then append it to the function maps
 		if currentLine.startswith(functionKeyword) and not currentLine[len(functionKeyword)].isalpha():
 			currentSection = "function"
+			indents = 0
 		
 		# Check if the current line is the start of a loop 
 		for key in loopKeywords:
 			if currentLine.startswith(key) and not currentLine[len(key)].isalpha():
 				currentSection = "loop"
+				indents = 0
+
 
 		# Check if the current line is the start of a conditional 
 		for key in conditionalKeywords:
 			if currentLine.startswith(key) and not currentLine[len(key)].isalpha():
 				currentSection = "conditional"
+				indents = 0
+
 
 		tokensOnThatLine = getTokensFromALine(tokens, lineIndex)
 		lastToken =  tokensOnThatLine[-1] if len(tokensOnThatLine) > 0 else [None]
@@ -79,9 +84,13 @@ def separateCode(linesOfCode, tokens):
 			indents += 1
 		if lastToken[0] == "dedent":
 			indents -= 1
+			lastTokenIndex = len(tokensOnThatLine) - 2
+			while tokensOnThatLine[lastTokenIndex][0] == "dedent" and indents > 0:
+				indents -= 1
+				lastTokenIndex -= 1
 			if indents == 0:
 				currentSection = "main"
-		
+
 	return {"main": main, "functions": functions, "loops": loops, "conditionals": conditionals}
 
 
