@@ -41,8 +41,8 @@ def add_file():
     # Delete all existing files from the database before adding new ones
     db.session.query(File).delete()
     db.session.commit()
-    
-    shutil.rmtree("../Front/public/imagesast")
+    if os.path.exists("../Front/public/imagesast"):
+        shutil.rmtree("../Front/public/imagesast")
     
     # Obtener los archivos enviados
     files = request.files.getlist('files')
@@ -60,7 +60,8 @@ def add_file():
 
 @app.route('/addImages', methods=['GET'])
 def addImages():
-    os.makedirs("../Front/public/imagesast/")
+    if not os.path.exists("../Front/public/imagesast"):
+        os.makedirs("../Front/public/imagesast/")
 #     # Verificar si hay archivos en la db
     files = File.query.all()
     file_data = {}
