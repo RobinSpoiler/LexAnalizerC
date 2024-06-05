@@ -215,9 +215,17 @@ def getSemanticPercentage(semantic1, semantic2):
 		value2 = semantic2[key]
 		charact1 = value1['characteristics']
 		charact2 = value2['characteristics']
+		counterNoZeros = 0
+		counterWithZeros = 0
 		# Comparing each of the characteristics to check if they have the same amount of ints, floats, etc.
 		for charactKey, charactValue1 in charact1.items():
 			charactValue2 = charact2[charactKey]
 			if charactValue1['cantidad'] == charactValue2['cantidad'] and charactValue1['cantidad'] > 0:
-				percentage += (1/28)
+				counterNoZeros += 1
+			if charactValue1['cantidad'] == charactValue2['cantidad']:
+				counterWithZeros += 1
+		if counterWithZeros == 7:
+			percentage += (7/28)
+		else:
+			percentage += (counterNoZeros/28)
 	return percentage * 100
