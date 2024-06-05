@@ -5,6 +5,9 @@ from flask_cors import CORS
 from parser import compareFilesWithTokens, compareFilesAsText, getTextSimilarityPercentage, getTokenForHighlight
 from tables import db, File
 from semanticDiff import getSemanticValues, getSemanticPercentage
+from astImp import create_ast_graph
+import os
+import shutil
 # import io
 
 def getPlainText(file):
@@ -39,6 +42,8 @@ def add_file():
     db.session.query(File).delete()
     db.session.commit()
     
+    shutil.rmtree("../Front/public/imagesast")
+    
     # Obtener los archivos enviados
     files = request.files.getlist('files')
 
@@ -52,6 +57,28 @@ def add_file():
 
     # print(content)
     return jsonify({'message': 'Archivos agregados correctamente'}), 200
+
+@app.route('/addImages', methods=['GET'])
+def addImages():
+    os.makedirs("../Front/public/imagesast/")
+#     # Verificar si hay archivos en la db
+    files = File.query.all()
+    file_data = {}
+    for file in files:
+        file_data[file.id] = {'filename': file.filename, 'content': file.content}
+    for key in file_data:
+        file_data[key]['content'] = file_data[key]['content'].decode('utf-8')
+    for key in file_data:
+        ast_graph = create_ast_graph(file_data[key]['content'])
+        # print(file_data[key]['content'])
+        # Render and display the AST graph
+        name = str(file_data[key]['filename'])
+        name = name.split('.')[0]
+        # print(ast_graph)
+        ast_graph.write_png("../Front/public/imagesast/%s.png" % name)
+    
+    return jsonify({'message': 'Imgs agregados correctamente'}), 200
+
 
 # Ruta para obtener todos los archivos de la base de datos
 @app.route('/getFiles', methods=['GET'])

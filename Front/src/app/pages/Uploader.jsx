@@ -7,8 +7,6 @@ import { useNavigate } from 'react-router-dom';
 export const Uploader = () => {
     const navigate = useNavigate();
     const [uploading, setUploading] = useState(false);
-    const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
-
 
     const pages = [
         { name: 'Subir archivos', route: '/upload' }

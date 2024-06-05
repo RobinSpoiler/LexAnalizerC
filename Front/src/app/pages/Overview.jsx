@@ -16,9 +16,11 @@ export const Overview = () => {
         setAllFiles(handleGetFiles())
     }, [])
 
+    
     useEffect(() => {
         handleCompare()
     }, [allfiles])
+    
 
     const pages = [
         { name: 'Subir archivos', route: '/upload' },
@@ -56,8 +58,6 @@ export const Overview = () => {
     };
 
 
-
-
     const handleGetFiles = async (event) => {
         try {
             const response = await fetch('http://127.0.0.1:5000/getFiles', {
@@ -80,6 +80,29 @@ export const Overview = () => {
             console.error('Error:', error.message);
         }
     };
+
+    const getImages = async (event) => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/addImages', {
+                method: 'GET',
+            });
+
+            // console.log(response)
+            if (!response.ok) {
+                throw new Error('Error al subir getImages');
+            }
+
+            const res = await response.json();
+
+            // console.log("handleGetFiles", allfiles)
+            console.log('getImages subidos exitosamente');
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
+    useEffect(() => {
+        getImages()
+    }, []);
 
     // Function to sort and set data
     function sortAndSetData(r) {
