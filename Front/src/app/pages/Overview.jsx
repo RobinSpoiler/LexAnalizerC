@@ -208,7 +208,7 @@ export const Overview = () => {
                     Matriz
                 </Link>
             </Box>
-            <Grid container justifyContent="center" alignContent="center" alignItems='center' height='65vh' sx={{
+            <Grid container justifyContent="center" alignItems='center' height='65vh' width='100vw' sx={{
                 marginTop: 20,
                 overflow: 'auto',
                 '&::-webkit-scrollbar': {
