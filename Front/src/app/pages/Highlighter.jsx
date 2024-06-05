@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { CircularProgressBar, NavBar } from '../Components';
+import { CircularProgressBar, ImageModal, NavBar } from '../Components';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { GridExpandMoreIcon } from '@mui/x-data-grid';
@@ -17,8 +17,14 @@ export const Highlighter = () => {
     const [isNivel3, setIsNivel3] = useState(false);
     const [selectedNivel, setSelectedNivel] = useState('');
     const [selectedPercentage, setSelectedPercentage] = useState('');
-
+    const [selectedImage, setSelectedImage] = useState(null);
     const [expandedExpander, setExpandedExpander] = useState('main');
+
+    const [openModal, setOpen] = useState(false);
+    const showModal = () => { setOpen(true); }
+    const closeModal = () => {
+        setOpen(false);
+    }
 
     const location = useLocation();
     const { file_names } = location.state || {};
@@ -314,6 +320,8 @@ export const Highlighter = () => {
         <Grid container spacing={0} margin={0} justifyContent='center' alignItems='center' minHeight='100vh' minWidth='100vw'>
             <NavBar pages={pages} />
 
+            <ImageModal open={openModal} close={closeModal} selectedImage={selectedImage} />
+
             {selectedPercentage && (
                 <Grid item xs={12} align='right' px={5} marginTop='12vh'>
                     <CircularProgressBar percentage={percentages[selectedPercentage].toFixed(2)} />
@@ -408,18 +416,18 @@ export const Highlighter = () => {
                                     backgroundColor: 'transparent',
                                     boxShadow: 'none',
                                     color: 'App.black',
-                                    border:  1,
+                                    border: 1,
                                     borderColor: categoryColors[category],
                                     textTransform: 'capitalize',
                                     '&:hover': {
                                         backgroundColor: categoryColors[category],
-                                        color : 'App.white',
+                                        color: 'App.white',
                                         borderColor: categoryColors[category],
                                     },
                                     '&:focus': {
                                         outline: 'none',
                                         backgroundColor: categoryColors[category],
-                                        color : 'App.white'
+                                        color: 'App.white'
                                     },
                                     '&.Mui-focusVisible': {
                                         outline: 'none',
@@ -547,11 +555,26 @@ export const Highlighter = () => {
                                         </AccordionDetails>
                                     </Accordion>
                                 ))}
+                                <Accordion key={fileKey}>
+                                    <AccordionSummary
+                                        expandIcon={<GridExpandMoreIcon />}
+                                        sx={{ textTransform: 'capitalize', fontWeight: 'bold', color: 'primary.main' }}
+                                    >
+                                        Árbol de sintaxis
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography sx={{ color: 'App.black', mb:1 }}>
+                                            Haz clic a la imagen para expandirla
+                                        </Typography>
+                                        <img key={fileKey} src={`/imagesast/${fileKey.slice(0, -3)}.png`} width="100%" height="100%" onClick={() => { setSelectedImage(`/imagesast/${fileKey.slice(0, -3)}.png`); showModal(); }} />
+                                    </AccordionDetails>
+                                </Accordion>
                             </Box>
                         </Paper>
                     </Grid>
                 )))}
             </Grid>
+
         </Grid>
     );
 };

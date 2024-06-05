@@ -11,6 +11,7 @@ export const Overview = () => {
     const [allfiles, setAllFiles] = useState(''); // Estado para controlar la vista
     const [listData, setListData] = useState(''); // Estado para controlar la data de compare
     const [matrixData, setMatrixData] = useState(''); // Estado para controlar la data de compare
+    const [loadedImg, setLoadedImg] = useState(false); // Estado para controlar la data de compare
 
     useEffect(() => {
         setAllFiles(handleGetFiles())
@@ -57,7 +58,6 @@ export const Overview = () => {
         "data": matriz
     };
 
-
     const handleGetFiles = async (event) => {
         try {
             const response = await fetch('http://127.0.0.1:5000/getFiles', {
@@ -93,15 +93,17 @@ export const Overview = () => {
             }
 
             const res = await response.json();
-
-            // console.log("handleGetFiles", allfiles)
+            setLoadedImg(true);
             console.log('getImages subidos exitosamente');
         } catch (error) {
             console.error('Error:', error.message);
         }
     };
+
     useEffect(() => {
-        getImages()
+        if(!loadedImg){
+            getImages()
+        }
     }, []);
 
     // Function to sort and set data
@@ -143,8 +145,6 @@ export const Overview = () => {
         }
     };
 
-
-
     const MatrixView = () => (
         <Grid item xs={12} align='center' sx={{ margin: '5px' }}>
             <MatrixDisplay matrix={matrixFormat} />
@@ -156,7 +156,6 @@ export const Overview = () => {
             {Object.entries(listData).map(([key, value]) => (
                 <Grid key={key} item xs={12} align='center' sx={{
                     margin: '5px',
-
                 }}>
                     <OverviewCard file_names={value.file_names} title={value.id} percentage={value.porcentaje} />
                 </Grid>
@@ -209,7 +208,7 @@ export const Overview = () => {
                     Matriz
                 </Link>
             </Box>
-            <Grid container justifyContent="center" alignItems="center" height='65vh' sx={{
+            <Grid container justifyContent="center" alignContent="center" alignItems='center' height='65vh' sx={{
                 marginTop: 20,
                 overflow: 'auto',
                 '&::-webkit-scrollbar': {
